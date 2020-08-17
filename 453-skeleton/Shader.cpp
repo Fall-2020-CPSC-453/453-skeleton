@@ -1,8 +1,9 @@
 #include "Shader.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 
@@ -10,6 +11,7 @@ Shader::Shader(std::string vertexPath, std::string fragmentPath) :
 	vertexPath(vertexPath),
 	fragmentPath(fragmentPath)
 {
+	bool success = false;
 
 	programID = glCreateProgram();
 
@@ -22,12 +24,51 @@ Shader::Shader(std::string vertexPath, std::string fragmentPath) :
 		glLinkProgram(programID);
 
 		// check for linking errors
-		valid = checkForLinkErrors(vertexPath + " and " + fragmentPath);
+		success = checkForLinkErrors(vertexPath + " and " + fragmentPath);
 	}
-	
-	// flag shaders for deletion as they are linked into the program and no longer necessary
-	//glDeleteShader(vertexID);
-	//glDeleteShader(fragmentID);
+
+	if (!success) {
+		glDeleteShader(vertexID);
+		glDeleteShader(fragmentID);
+		glDeleteProgram(programID);
+
+		throw std::runtime_error("Shaders did not compile and/or link. Cannot complete construction of object.");
+	}
+}
+
+
+Shader::Shader(Shader&& other) :
+	programID(std::move(other.programID)),
+	vertexID(std::move(other.vertexID)),
+	fragmentID(std::move(other.fragmentID)),
+	vertexPath(std::move(other.vertexPath)),
+	fragmentPath(std::move(other.fragmentPath))
+{
+	other.programID = 0;
+	other.vertexID = 0;
+	other.fragmentID = 0;
+}
+
+
+Shader& Shader::operator=(Shader&& other) {
+	programID = std::move(other.programID);
+	vertexID = std::move(other.vertexID);
+	fragmentID = std::move(other.fragmentID);
+	vertexPath = std::move(other.vertexPath);
+	fragmentPath = std::move(other.fragmentPath);
+
+	other.programID = 0;
+	other.vertexID = 0;
+	other.fragmentID = 0;
+
+	return *this;
+}
+
+
+Shader::~Shader() {
+	glDeleteShader(vertexID);
+	glDeleteShader(fragmentID);
+	glDeleteProgram(programID);
 }
 
 
@@ -36,7 +77,7 @@ bool Shader::recompile() {
 	GLuint newVertexID = compileShader(vertexPath, GL_VERTEX_SHADER);
 	GLuint newFragmentID = compileShader(fragmentPath, GL_FRAGMENT_SHADER);
 
-	// both shader compiled, try linking
+	// both shaders compiled, try linking
 	if (newVertexID && newFragmentID) {
 
 		glDetachShader(programID, vertexID);
@@ -67,29 +108,26 @@ bool Shader::recompile() {
 			glLinkProgram(programID);
 
 			// check for linking errors
-			valid = checkForLinkErrors(vertexPath + " and " + fragmentPath);
-			return valid;
+			if (!checkForLinkErrors(vertexPath + " and " + fragmentPath)) {
+				throw std::runtime_error("Previous shaders did not compile and/or link. Should not happen.");
+			}
+			return false;
 		}
+	}
+	else {
+		return false;
 	}
 }
 
 
-bool Shader::use() {
-	if (valid) {
-		glUseProgram(programID);
-	}
-	else {
-		std::cout << "ERROR::SHADER trying to make active invalid shader program" << std::endl;
-	}
-	return valid;
+void Shader::use() const {
+	glUseProgram(programID);
 }
 
 
 GLuint Shader::compileShader(std::string path, GLenum type) {
 
-	// ******************
 	// read shader source
-	// ******************
 	std::string sourceString;
 	std::ifstream file;
 
@@ -117,9 +155,7 @@ GLuint Shader::compileShader(std::string path, GLenum type) {
 	const GLchar* sourceCode = sourceString.c_str();
 
 
-	// **************
 	// compile shader
-	// **************
 	GLuint shader = glCreateShader(type);
 	glShaderSource(shader, 1, &sourceCode, NULL);
 	glCompileShader(shader);
@@ -146,6 +182,7 @@ bool Shader::checkForLinkErrors(std::string message) {
 
 	GLint success;
 
+	// check for link errors
 	glGetProgramiv(programID, GL_LINK_STATUS, &success);
 	if (!success) {
 		GLint logLength;

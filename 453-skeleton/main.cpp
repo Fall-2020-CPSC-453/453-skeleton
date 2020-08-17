@@ -32,6 +32,19 @@ int main() {
 	// SHADERS
 	Shader shader("shaders/test.vert", "shaders/test.frag");
 
+	// Testing move and delete
+	{
+		Shader shader2("shaders/test.vert", "shaders/test.frag");
+		shader = std::move(shader2);
+	}
+
+	// SHADER COPY AND MOVE
+	//Shader deffcons; // not allowed
+	//Shader copycons(shader); // not allowed
+	//Shader copyassn = shader; // not allowed
+	//Shader movecons(std::move(shader)); // allowed
+	//Shader moveassn = std::move(shader); // allowed
+
 	// TEST GEOMETRY
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f,
@@ -71,8 +84,6 @@ int main() {
 
 		glfwSwapBuffers(window);
 	}
-
-	std::cout << "test" << std::endl;
 
 	glfwTerminate();
 	return 0;

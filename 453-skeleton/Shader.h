@@ -9,21 +9,31 @@ class Shader {
 public:
 	Shader(std::string vertexPath, std::string fragmentPath);
 
-	bool recompile();
+	// Copying not allowed
+	Shader(const Shader&) = delete;
+	Shader operator=(const Shader&) = delete;
 
-	bool use();
+	// Moving is allowed
+	Shader(Shader&& other);
+	Shader& operator=(Shader&& other);
+
+	// Destructor to cleanup resources on GPU
+	~Shader();
+
+	// Public interface
+	bool recompile();
+	void use() const;
 
 private:
 	GLuint compileShader(std::string path, GLenum type);
 	bool checkForLinkErrors(std::string message);
 
 	GLint programID;
-	bool valid;
-
-	std::string vertexPath;
-	std::string fragmentPath;
 
 	GLuint vertexID;
 	GLuint fragmentID;
+
+	std::string vertexPath;
+	std::string fragmentPath;
 };
 
