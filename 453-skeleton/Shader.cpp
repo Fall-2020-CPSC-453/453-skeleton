@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 
+
 Shader::Shader(std::string vertexPath, std::string fragmentPath) :
 	vertexPath(vertexPath),
 	fragmentPath(fragmentPath)
@@ -25,37 +26,51 @@ Shader::Shader(std::string vertexPath, std::string fragmentPath) :
 	}
 	
 	// flag shaders for deletion as they are linked into the program and no longer necessary
-	glDeleteShader(vertexID);
-	glDeleteShader(fragmentID);
+	//glDeleteShader(vertexID);
+	//glDeleteShader(fragmentID);
 }
 
 
 bool Shader::recompile() {
 	
 	GLuint newVertexID = compileShader(vertexPath, GL_VERTEX_SHADER);
-	GLuint newFragmentID = compileShader(vertexPath, GL_FRAGMENT_SHADER);
+	GLuint newFragmentID = compileShader(fragmentPath, GL_FRAGMENT_SHADER);
 
+	// both shader compiled, try linking
 	if (newVertexID && newFragmentID) {
 
 		glDetachShader(programID, vertexID);
 		glDetachShader(programID, fragmentID);
 
-		vertexID = newVertexID;
-		fragmentID = newFragmentID;
-		
-		glAttachShader(programID, vertexID);
-		glAttachShader(programID, fragmentID);
+		glAttachShader(programID, newVertexID);
+		glAttachShader(programID, newFragmentID);
 		glLinkProgram(programID);
 
 		// check for linking errors
-		valid = checkForLinkErrors(vertexPath + " and " + fragmentPath);
-	}
+		bool success = checkForLinkErrors(vertexPath + " and " + fragmentPath);
 
-	// flag shaders for deletion as they are linked into the program and no longer necessary
-	glDeleteShader(vertexID);
-	glDeleteShader(fragmentID);
-	
-	return valid;
+		if (success) {
+			glDeleteShader(vertexID);
+			glDeleteShader(fragmentID);
+
+			vertexID = newVertexID;
+			fragmentID = newFragmentID;
+			return true;
+		}
+		else {
+			std::cerr << "INFO::SHADER falling back to previous version of shaders" << std::endl;
+			glDetachShader(programID, newVertexID);
+			glDetachShader(programID, newFragmentID);
+
+			glAttachShader(programID, vertexID);
+			glAttachShader(programID, fragmentID);
+			glLinkProgram(programID);
+
+			// check for linking errors
+			valid = checkForLinkErrors(vertexPath + " and " + fragmentPath);
+			return valid;
+		}
+	}
 }
 
 

@@ -5,7 +5,6 @@
 
 #include "Shader.h"
 
-
 int main() {
 
 	// GLFW
@@ -30,12 +29,46 @@ int main() {
 		return -1;
 	}
 
-	// SHADER TESTING
-	Shader testShader("shaders/test.vert", "shaders/test.frag");
+	// SHADERS
+	Shader shader("shaders/test.vert", "shaders/test.frag");
 
-	// MAIN LOOP
+	// TEST GEOMETRY
+	float vertices[] = {
+		-0.5f, -0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
+		 0.0f,  0.5f, 0.0f
+	};
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+
+	// CALLBACKS
+	auto keyCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+			Shader* shader = static_cast<Shader*>(glfwGetWindowUserPointer(window));
+			shader->recompile();
+		}
+	};
+	glfwSetWindowUserPointer(window, &shader);
+	glfwSetKeyCallback(window, keyCallback);
+
+	// RENDER LOOP
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
+
+		shader.use();
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 		glfwSwapBuffers(window);
 	}
 
