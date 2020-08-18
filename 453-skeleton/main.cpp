@@ -7,6 +7,10 @@
 
 #include <iostream>
 
+#include "Shader.h"
+#include "Window.h"
+#include "GLDebug.h"
+#include "Log.h"
 
 // EXAMPLE CALLBACKS
 class MyCallbacks : public CallbackInterface {
@@ -39,10 +43,14 @@ public:
 
 
 int main() {
+	Log::debug("Starting main");
 
 	// WINDOW
 	glfwInit();
 	Window window(800, 800, "CPSC 453"); // can set callbacks at construction if desired
+
+
+	GLDebug::enable();
 
 	// SHADERS
 	ShaderProgram shader("shaders/test.vert", "shaders/test.frag");

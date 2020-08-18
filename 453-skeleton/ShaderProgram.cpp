@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "Log.h"
+
 
 ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath) :
 	vertex(vertexPath, GL_VERTEX_SHADER),
@@ -82,12 +84,12 @@ bool ShaderProgram::recompile() {
 			return true;
 		}
 		else {
-			std::cerr << "INFO::SHADER_PROGRAM falling back to previous version of shaders" << std::endl;
+			Log::warn("SHADER_PROGRAM falling back to previous version of shaders");
 			return false;
 		}
 	}
-	catch (std::runtime_error e) {
-		std::cerr << "INFO::SHADER_PROGRAM falling back to previous version of shaders" << std::endl;
+	catch (std::runtime_error &e) {
+		Log::warn("SHADER_PROGRAM falling back to previous version of shaders");
 		return false;
 	}
 }
@@ -110,13 +112,12 @@ bool ShaderProgram::checkLinkSuccess(GLuint ID) {
 		std::vector<char> log(logLength);
 		glGetProgramInfoLog(ID, logLength, NULL, log.data());
 
-		std::cerr << "ERROR::SHADER_PROGRAM linking " << vertex.getPath() << " + " << fragment.getPath() << ":" << std::endl;
-		std::cerr << log.data() << std::endl;
+		Log::error("SHADER_PROGRAM linking {} + {}:\n{}", vertex.getPath(), fragment.getPath(), log.data());
 
 		return false;
 	}
 	else {
-		std::cerr << "INFO::SHADER_PROGRAM successfully compiled and linked " << vertex.getPath() << " + " << fragment.getPath() << std::endl;
+		Log::info("SHADER_PROGRAM successfully compiled and linked {} + {}", vertex.getPath(), fragment.getPath());
 		return true;
 	}
 }

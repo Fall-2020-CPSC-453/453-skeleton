@@ -10,25 +10,25 @@
 void Window::keyMetaCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
 	callbacks->keyCallback(key, scancode, action, mods);
-};
+}
 
 
 void Window::mouseButtonMetaCallback(GLFWwindow* window, int button, int action, int mods) {
 	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
 	callbacks->mouseButtonCallback(button, action, mods);
-};
+}
 
 
 void Window::cursorPosMetaCallback(GLFWwindow* window, double xpos, double ypos) {
 	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
 	callbacks->cursorPosCallback(xpos, ypos);
-};
+}
 
 
 void Window::scrollMetaCallback(GLFWwindow* window, double xoffset, double yoffset) {
 	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
 	callbacks->scrollCallback(xoffset, yoffset);
-};
+}
 
 
 void Window::windowSizeMetaCallback(GLFWwindow* window, int width, int height) {
@@ -49,6 +49,7 @@ Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, G
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // needed for mac?
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 	// create window
 	window = glfwCreateWindow(width, height, title, monitor, share);
@@ -113,7 +114,7 @@ void Window::dealloc() {
 
 
 void Window::setCallbacks(CallbackInterface* callbacks) {
-	
+
 	// set userdata of window to point to the object that carries out the callbacks
 	glfwSetWindowUserPointer(window, callbacks);
 

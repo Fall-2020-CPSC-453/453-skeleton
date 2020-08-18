@@ -1,5 +1,6 @@
 #include "Shader.h"
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -72,7 +73,7 @@ bool Shader::compile() {
 		// convert stream into string
 		sourceString = sourceStream.str();
 	}
-	catch (std::ifstream::failure e) {
+	catch (std::ifstream::failure &e) {
 		std::cerr << "ERROR::SHADER reading " << path << ":" << std::endl;
 		std::cerr << strerror(errno) << std::endl;
 		return false;
