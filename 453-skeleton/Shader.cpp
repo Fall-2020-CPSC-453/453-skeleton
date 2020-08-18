@@ -51,6 +51,9 @@ Shader::Shader(Shader&& other) :
 
 
 Shader& Shader::operator=(Shader&& other) {
+	
+	dealloc();
+
 	programID = std::move(other.programID);
 	vertexID = std::move(other.vertexID);
 	fragmentID = std::move(other.fragmentID);
@@ -66,6 +69,11 @@ Shader& Shader::operator=(Shader&& other) {
 
 
 Shader::~Shader() {
+	dealloc();
+}
+
+
+void Shader::dealloc() {
 	glDeleteShader(vertexID);
 	glDeleteShader(fragmentID);
 	glDeleteProgram(programID);

@@ -4,46 +4,52 @@
 #include <iostream>
 
 #include "Shader.h"
+#include "Window.h"
+
+
+// EXAMPLE CALLBACKS
+class MyCallbacks : public CallbackInterface {
+
+public:
+	MyCallbacks(Shader& shader) : shader(shader) {}
+
+	virtual void keyCallback(int key, int scancode, int action, int mods) {
+		if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+			shader.recompile();
+		}
+	}
+
+private:
+	Shader& shader;
+};
+
+class MyCallbacks2 : public CallbackInterface {
+
+public:
+	MyCallbacks2() {}
+
+	virtual void keyCallback(int key, int scancode, int action, int mods) {
+		if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+			std::cout << "called back" << std::endl;
+		}
+	}
+};
+// END EXAMPLES
+
 
 int main() {
 
-	// GLFW
+	// WINDOW
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // needed for mac?
-
-	GLFWwindow* window = glfwCreateWindow(800, 600, "CPSC 4534", NULL, NULL);
-	if (window == NULL) {
-		std::cerr << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-
-	// GLEW
-	GLenum err = glewInit();
-	if (glewInit() != GLEW_OK) {
-		std::cerr << "glewInit error: " << glewGetErrorString(err) << std::endl;
-		return -1;
-	}
+	MyCallbacks2 test;
+	Window window(&test, 800, 800, "CPSC 453"); // can set callbacks at construction if desired
 
 	// SHADERS
 	Shader shader("shaders/test.vert", "shaders/test.frag");
 
-	// Testing move and delete
-	{
-		Shader shader2("shaders/test.vert", "shaders/test.frag");
-		shader = std::move(shader2);
-	}
-
-	// SHADER COPY AND MOVE
-	//Shader deffcons; // not allowed
-	//Shader copycons(shader); // not allowed
-	//Shader copyassn = shader; // not allowed
-	//Shader movecons(std::move(shader)); // allowed
-	//Shader moveassn = std::move(shader); // allowed
+	// CALLBACKS
+	MyCallbacks callbacks(shader);
+	window.setCallbacks(&callbacks); // can also update callbacks to new ones
 
 	// TEST GEOMETRY
 	float vertices[] = {
@@ -63,26 +69,15 @@ int main() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-
-	// CALLBACKS
-	auto keyCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-		if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-			Shader* shader = static_cast<Shader*>(glfwGetWindowUserPointer(window));
-			shader->recompile();
-		}
-	};
-	glfwSetWindowUserPointer(window, &shader);
-	glfwSetKeyCallback(window, keyCallback);
-
 	// RENDER LOOP
-	while (!glfwWindowShouldClose(window)) {
+	while (!window.shouldClose()) {
 		glfwPollEvents();
 
 		shader.use();
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		glfwSwapBuffers(window);
+		window.swapBuffers();
 	}
 
 	glfwTerminate();

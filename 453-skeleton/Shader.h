@@ -4,6 +4,7 @@
 
 #include <string>
 
+
 class Shader {
 
 public:
@@ -19,6 +20,8 @@ public:
 
 	// Destructor to cleanup resources on GPU
 	~Shader();
+	void dealloc();
+
 
 	// Public interface
 	bool recompile();
