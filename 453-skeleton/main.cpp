@@ -1,3 +1,7 @@
+#include "Geometry.h"
+#include "ShaderProgram.h"
+#include "Window.h"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -8,12 +12,11 @@
 #include "GLDebug.h"
 #include "Log.h"
 
-
 // EXAMPLE CALLBACKS
 class MyCallbacks : public CallbackInterface {
 
 public:
-	MyCallbacks(Shader& shader) : shader(shader) {}
+	MyCallbacks(ShaderProgram& shader) : shader(shader) {}
 
 	virtual void keyCallback(int key, int scancode, int action, int mods) {
 		if (key == GLFW_KEY_R && action == GLFW_PRESS) {
@@ -22,7 +25,7 @@ public:
 	}
 
 private:
-	Shader& shader;
+	ShaderProgram& shader;
 };
 
 class MyCallbacks2 : public CallbackInterface {
@@ -44,44 +47,45 @@ int main() {
 
 	// WINDOW
 	glfwInit();
-	MyCallbacks2 test;
-	Window window(&test, 800, 800, "CPSC 453"); // can set callbacks at construction if desired
+	Window window(800, 800, "CPSC 453"); // can set callbacks at construction if desired
 
 
 	GLDebug::enable();
 
 	// SHADERS
-	Shader shader("shaders/test.vert", "shaders/test.frag");
+	ShaderProgram shader("shaders/test.vert", "shaders/test.frag");
 
 	// CALLBACKS
 	MyCallbacks callbacks(shader);
 	window.setCallbacks(&callbacks); // can also update callbacks to new ones
 
-	// TEST GEOMETRY
-	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
-	};
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	// GEOMETRY
+	CPU_Geometry cpuGeom;
+	GPU_Geometry gpuGeom;
 
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
+	// vertices
+	cpuGeom.verts.push_back(glm::vec3(-0.5f, -0.5f, 0.f));
+	cpuGeom.verts.push_back(glm::vec3(0.5f, -0.5f, 0.f));
+	cpuGeom.verts.push_back(glm::vec3(0.f, 0.5f, 0.f));
 
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	// colours (these should be in linear space)
+	cpuGeom.cols.push_back(glm::vec3(1.f, 0.f, 0.f));
+	cpuGeom.cols.push_back(glm::vec3(0.f, 1.f, 0.f));
+	cpuGeom.cols.push_back(glm::vec3(0.f, 0.f, 1.f));
+
+	gpuGeom.setVerts(cpuGeom.verts);
+	gpuGeom.setCols(cpuGeom.cols);
 
 	// RENDER LOOP
 	while (!window.shouldClose()) {
 		glfwPollEvents();
 
 		shader.use();
-		glBindVertexArray(vao);
+		gpuGeom.bind();
+
+		glEnable(GL_FRAMEBUFFER_SRGB);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisable(GL_FRAMEBUFFER_SRGB); // disable sRGB for things like imgui
 
 		window.swapBuffers();
 	}

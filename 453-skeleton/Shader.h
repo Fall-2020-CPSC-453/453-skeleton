@@ -8,7 +8,7 @@
 class Shader {
 
 public:
-	Shader(std::string vertexPath, std::string fragmentPath);
+	Shader(std::string path, GLenum type);
 
 	// Copying not allowed
 	Shader(const Shader&) = delete;
@@ -24,19 +24,17 @@ public:
 
 
 	// Public interface
-	bool recompile();
-	void use() const;
+	std::string getPath() const { return path; }
+	GLenum getType() const { return type; }
+
+	void attach(GLuint programID) { glAttachShader(programID, shaderID); }
 
 private:
-	GLuint compileShader(std::string path, GLenum type);
-	bool checkForLinkErrors(std::string message);
+	GLuint shaderID;
+	GLenum type;
 
-	GLint programID;
+	std::string path;
 
-	GLuint vertexID;
-	GLuint fragmentID;
-
-	std::string vertexPath;
-	std::string fragmentPath;
+	bool compile();
 };
 
