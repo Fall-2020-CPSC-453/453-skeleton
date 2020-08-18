@@ -11,6 +11,7 @@ Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, G
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // needed for mac?
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 	// create window
 	window = glfwCreateWindow(width, height, title, monitor, share);
@@ -77,7 +78,7 @@ void Window::setCallbacks(CallbackInterface* callbacks) {
 	glfwSetWindowUserPointer(window, callbacks);
 
 	// Meta callback functions. These bind to the actual glfw callback
-	// get the actual callback method from user data, and then call that. 
+	// get the actual callback method from user data, and then call that.
 	auto keyMetaCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 		CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
 		callbacks->keyCallback(key, scancode, action, mods);

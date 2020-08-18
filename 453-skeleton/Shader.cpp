@@ -1,5 +1,6 @@
 #include "Shader.h"
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -155,7 +156,7 @@ GLuint Shader::compileShader(std::string path, GLenum type) {
 		// convert stream into string
 		sourceString = sourceStream.str();
 	}
-	catch (std::ifstream::failure e) {
+	catch (std::ifstream::failure &e) {
 		std::cerr << "ERROR::SHADER reading " << path << ":" << std::endl;
 		std::cerr << strerror(errno) << std::endl;
 		return 0;

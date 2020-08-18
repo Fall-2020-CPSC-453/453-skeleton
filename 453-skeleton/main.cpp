@@ -5,6 +5,8 @@
 
 #include "Shader.h"
 #include "Window.h"
+#include "GLDebug.h"
+#include "Log.h"
 
 
 // EXAMPLE CALLBACKS
@@ -38,11 +40,15 @@ public:
 
 
 int main() {
+	Log::debug("Starting main");
 
 	// WINDOW
 	glfwInit();
 	MyCallbacks2 test;
 	Window window(&test, 800, 800, "CPSC 453"); // can set callbacks at construction if desired
+
+
+	GLDebug::enable();
 
 	// SHADERS
 	Shader shader("shaders/test.vert", "shaders/test.frag");
