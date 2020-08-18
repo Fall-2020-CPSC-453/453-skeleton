@@ -3,6 +3,44 @@
 #include <iostream>
 
 
+// ***************************
+// static function definitions
+// ***************************
+
+void Window::keyMetaCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
+	callbacks->keyCallback(key, scancode, action, mods);
+};
+
+
+void Window::mouseButtonMetaCallback(GLFWwindow* window, int button, int action, int mods) {
+	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
+	callbacks->mouseButtonCallback(button, action, mods);
+};
+
+
+void Window::cursorPosMetaCallback(GLFWwindow* window, double xpos, double ypos) {
+	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
+	callbacks->cursorPosCallback(xpos, ypos);
+};
+
+
+void Window::scrollMetaCallback(GLFWwindow* window, double xoffset, double yoffset) {
+	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
+	callbacks->scrollCallback(xoffset, yoffset);
+};
+
+
+void Window::windowSizeMetaCallback(GLFWwindow* window, int width, int height) {
+	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
+	callbacks->windowSizeCallback(width, height);
+}
+
+
+// **********************
+// non-static definitions
+// **********************
+
 Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share) :
 	callbacks(nullptr)
 {
@@ -29,6 +67,9 @@ Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, G
 
 		throw std::runtime_error("Failed to initialize GLEW");
 	}
+
+	// set default window size callback
+	glfwSetWindowSizeCallback(window, defaultWindowSizeCallback);
 }
 
 
@@ -76,33 +117,12 @@ void Window::setCallbacks(CallbackInterface* callbacks) {
 	// set userdata of window to point to the object that carries out the callbacks
 	glfwSetWindowUserPointer(window, callbacks);
 
-	// Meta callback functions. These bind to the actual glfw callback
-	// get the actual callback method from user data, and then call that. 
-	auto keyMetaCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-		CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
-		callbacks->keyCallback(key, scancode, action, mods);
-	};
-
-	auto mouseButtonMetaCallback = [](GLFWwindow* window, int button, int action, int mods) {
-		CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
-		callbacks->mouseButtonCallback(button, action, mods);
-	};
-
-	auto cursorPosMetaCallback = [](GLFWwindow* window, double xpos, double ypos) {
-		CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
-		callbacks->cursorPosCallback(xpos, ypos);
-	};
-
-	auto scrollMetaCallback = [](GLFWwindow* window, double xoffset, double yoffset) {
-		CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
-		callbacks->scrollCallback(xoffset, yoffset);
-	};
-
 	// bind meta callbacks to actual callbacks
 	glfwSetKeyCallback(window, keyMetaCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonMetaCallback);
 	glfwSetCursorPosCallback(window, cursorPosMetaCallback);
 	glfwSetScrollCallback(window, scrollMetaCallback);
+	glfwSetWindowSizeCallback(window, windowSizeMetaCallback);
 }
 
 

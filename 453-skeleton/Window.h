@@ -11,6 +11,7 @@ public:
 	virtual void mouseButtonCallback(int button, int action, int mods) {}
 	virtual void cursorPosCallback(double xpos, double ypos) {}
 	virtual void scrollCallback(double xoffset, double yoffset) {}
+	virtual void windowSizeCallback(int width, int height) { glViewport(0, 0, width, height); }
 };
 
 
@@ -50,7 +51,17 @@ public:
 	void swapBuffers() { glfwSwapBuffers(window); }
 
 private:
-	GLFWwindow* window;         // owning ptr from glfw
+	GLFWwindow* window;           // owning ptr from glfw
 	CallbackInterface* callbacks; // non-owning optional ptr (user provided)
+
+	static void defaultWindowSizeCallback(GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); }
+
+	// Meta callback functions. These bind to the actual glfw callback
+	// get the actual callback method from user data, and then call that.
+	static void keyMetaCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void mouseButtonMetaCallback(GLFWwindow* window, int button, int action, int mods);
+	static void cursorPosMetaCallback(GLFWwindow* window, double xpos, double ypos);
+	static void scrollMetaCallback(GLFWwindow* window, double xoffset, double yoffset);
+	static void windowSizeMetaCallback(GLFWwindow* window, int width, int height);
 };
 
