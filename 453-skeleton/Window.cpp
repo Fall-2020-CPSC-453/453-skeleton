@@ -85,7 +85,7 @@ void Window::setCallbacks(CallbackInterface* callbacks) {
 
 	auto mouseButtonMetaCallback = [](GLFWwindow* window, int button, int action, int mods) {
 		CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
-		callbacks->mousButtonCallback(button, action, mods);
+		callbacks->mouseButtonCallback(button, action, mods);
 	};
 
 	auto cursorPosMetaCallback = [](GLFWwindow* window, double xpos, double ypos) {

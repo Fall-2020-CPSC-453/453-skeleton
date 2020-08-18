@@ -8,7 +8,7 @@
 class CallbackInterface {
 public:
 	virtual void keyCallback(int key, int scancode, int action, int mods) {}
-	virtual void mousButtonCallback(int button, int action, int mods) {}
+	virtual void mouseButtonCallback(int button, int action, int mods) {}
 	virtual void cursorPosCallback(double xpos, double ypos) {}
 	virtual void scrollCallback(double xoffset, double yoffset) {}
 };
@@ -46,7 +46,7 @@ public:
 	int getHeight() const { return getSize().y; }
 
 	int shouldClose() { return glfwWindowShouldClose(window); }
-	void makeContextCurrent() { glfwMakeContextCurrent(window); };
+	void makeContextCurrent() { glfwMakeContextCurrent(window); }
 	void swapBuffers() { glfwSwapBuffers(window); }
 
 private:

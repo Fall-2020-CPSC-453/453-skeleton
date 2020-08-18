@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "Shader.h"
+#include "ShaderProgram.h"
 #include "Window.h"
 
 
@@ -11,7 +11,7 @@
 class MyCallbacks : public CallbackInterface {
 
 public:
-	MyCallbacks(Shader& shader) : shader(shader) {}
+	MyCallbacks(ShaderProgram& shader) : shader(shader) {}
 
 	virtual void keyCallback(int key, int scancode, int action, int mods) {
 		if (key == GLFW_KEY_R && action == GLFW_PRESS) {
@@ -20,7 +20,7 @@ public:
 	}
 
 private:
-	Shader& shader;
+	ShaderProgram& shader;
 };
 
 class MyCallbacks2 : public CallbackInterface {
@@ -41,11 +41,15 @@ int main() {
 
 	// WINDOW
 	glfwInit();
-	MyCallbacks2 test;
-	Window window(&test, 800, 800, "CPSC 453"); // can set callbacks at construction if desired
+	Window window(800, 800, "CPSC 453"); // can set callbacks at construction if desired
 
 	// SHADERS
-	Shader shader("shaders/test.vert", "shaders/test.frag");
+	ShaderProgram shader("shaders/test.vert", "shaders/test.frag");
+
+	{
+		ShaderProgram shader2("shaders/test.vert", "shaders/test.frag");
+		shader = std::move(shader2);
+	}
 
 	// CALLBACKS
 	MyCallbacks callbacks(shader);
