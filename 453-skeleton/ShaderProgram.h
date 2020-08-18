@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Shader.h"
+
 #include <GL/glew.h>
 
 #include <string>
 
-#include "Shader.h"
 
 class ShaderProgram {
 

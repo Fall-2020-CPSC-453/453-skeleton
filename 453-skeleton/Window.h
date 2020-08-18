@@ -29,7 +29,7 @@ public:
 	Window(Window&& other);
 	Window& operator=(Window&& other);
 
-	// Destructor to cleanup resources on GPU
+	// Destructor to cleanup created window
 	~Window();
 	void dealloc();
 

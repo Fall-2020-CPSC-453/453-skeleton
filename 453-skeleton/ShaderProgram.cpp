@@ -1,8 +1,6 @@
 #include "ShaderProgram.h"
 
-#include <fstream>
 #include <iostream>
-#include <sstream>
 #include <stdexcept>
 #include <vector>
 
@@ -45,7 +43,6 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) {
 	fragment = std::move(other.fragment);
 
 	other.programID = 0;
-
 	return *this;
 }
 

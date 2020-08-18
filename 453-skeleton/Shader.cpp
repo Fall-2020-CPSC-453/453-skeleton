@@ -24,7 +24,6 @@ Shader::Shader(Shader&& other) :
 	path(std::move(other.path))
 {
 	other.shaderID = 0;
-	other.type = 0;
 }
 
 
@@ -37,8 +36,6 @@ Shader& Shader::operator=(Shader&& other) {
 	path = std::move(other.path);
 
 	other.shaderID = 0;
-	other.type = 0;
-
 	return *this;
 }
 

@@ -22,6 +22,8 @@ public:
 	~Shader();
 	void dealloc();
 
+
+	// Public interface
 	std::string getPath() const { return path; }
 	GLenum getType() const { return type; }
 
