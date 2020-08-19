@@ -109,7 +109,7 @@ bool ShaderProgram::checkLinkSuccess(GLuint ID) {
 	if (!success) {
 		GLint logLength;
 		glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &logLength);
-		std::vector<char> log(logLength);
+		std::vector<char> log((size_t)logLength);
 		glGetProgramInfoLog(ID, logLength, NULL, log.data());
 
 		Log::error("SHADER_PROGRAM linking {} + {}:\n{}", vertex.getPath(), fragment.getPath(), log.data());
