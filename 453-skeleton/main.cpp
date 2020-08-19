@@ -84,6 +84,7 @@ int main() {
 		gpuGeom.bind();
 
 		glEnable(GL_FRAMEBUFFER_SRGB);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDisable(GL_FRAMEBUFFER_SRGB); // disable sRGB for things like imgui
 
