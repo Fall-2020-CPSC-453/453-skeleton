@@ -1,8 +1,22 @@
 #pragma once
 
+#include "GLHandles.h"
+
 #include <GL/glew.h>
 
 #include <string>
+
+
+class ShaderCompileException: public std::runtime_error {
+public:
+	explicit ShaderCompileException(const char* message)
+		: std::runtime_error(message)
+      {}
+
+	explicit ShaderCompileException(const std::string& message)
+		: std::runtime_error(message)
+      {}
+};
 
 
 class Shader {
@@ -15,22 +29,16 @@ public:
 	Shader operator=(const Shader&) = delete;
 
 	// Moving is allowed
-	Shader(Shader&& other);
-	Shader& operator=(Shader&& other);
-
-	// Destructor to cleanup resources on GPU
-	~Shader();
-	void dealloc();
-
+	Shader(Shader&& other) = default;
+	Shader& operator=(Shader&& other) = default;
 
 	// Public interface
 	std::string getPath() const { return path; }
 	GLenum getType() const { return type; }
-
-	void attach(GLuint programID) { glAttachShader(programID, shaderID); }
+	operator GLuint() const { return shaderID; }
 
 private:
-	GLuint shaderID;
+	ShaderID shaderID;
 	GLenum type;
 
 	std::string path;

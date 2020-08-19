@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+#include "GLHandles.h"
+
 
 class VertexBuffer {
 
@@ -13,19 +15,14 @@ public:
 	VertexBuffer operator=(const VertexBuffer&) = delete;
 
 	// Moving is allowed
-	VertexBuffer(VertexBuffer&& other);
-	VertexBuffer& operator=(VertexBuffer&& other);
-
-	// Destructor to cleanup resources on GPU
-	~VertexBuffer();
-	void dealloc();
-
+	VertexBuffer(VertexBuffer&& other) = default;
+	VertexBuffer& operator=(VertexBuffer&& other) = default;
 
 	// Public interface
 	void bind() { glBindBuffer(GL_ARRAY_BUFFER, bufferID); }
 	void uploadData(GLsizeiptr size, void* data, GLenum usage);
 
 private:
-	GLuint bufferID;
+	BufferID bufferID;
 };
 
