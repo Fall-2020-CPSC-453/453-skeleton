@@ -93,7 +93,7 @@ bool Shader::compile() {
 	if (!success) {
 		GLint logLength;
 		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
-		std::vector<char> log(logLength);
+		std::vector<char> log((size_t)logLength);
 		glGetShaderInfoLog(shaderID, logLength, NULL, log.data());
 
 		std::cerr << "ERROR::SHADER compiling " << path << ":" << std::endl;
