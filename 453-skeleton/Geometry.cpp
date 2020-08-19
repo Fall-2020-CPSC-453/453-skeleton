@@ -11,10 +11,10 @@ GPU_Geometry::GPU_Geometry() :
 
 
 void GPU_Geometry::setVerts(std::vector<glm::vec3>& verts) {
-	vertBuffer.uploadData(sizeof(glm::vec3) * verts.size(), verts.data(), GL_STATIC_DRAW);
+	vertBuffer.uploadData(GLsizeiptr(sizeof(glm::vec3) * verts.size()), verts.data(), GL_STATIC_DRAW);
 }
 
 
 void GPU_Geometry::setCols(std::vector<glm::vec3>& cols) {
-	colBuffer.uploadData(sizeof(glm::vec3) * cols.size(), cols.data(), GL_STATIC_DRAW);
+	colBuffer.uploadData(GLsizeiptr(sizeof(glm::vec3) * cols.size()), cols.data(), GL_STATIC_DRAW);
 }
