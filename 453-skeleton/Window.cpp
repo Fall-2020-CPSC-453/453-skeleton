@@ -41,8 +41,8 @@ void Window::windowSizeMetaCallback(GLFWwindow* window, int width, int height) {
 // non-static definitions
 // **********************
 
-Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share) :
-	callbacks(nullptr)
+Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
+	: callbacks(nullptr)
 {
 	// specify OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -74,25 +74,25 @@ Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, G
 }
 
 
-Window::Window(CallbackInterface* callbacks, int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share) :
-	Window(width, height, title, monitor, share)
+Window::Window(CallbackInterface* callbacks, int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
+	: Window(width, height, title, monitor, share)
 {
 	setCallbacks(callbacks);
 }
 
 
-Window::Window(Window&& other) :
-	window(std::move(other.window)),
-	callbacks(std::move(other.callbacks))
+Window::Window(Window&& other) noexcept
+	: window(std::move(other.window))
+	, callbacks(std::move(other.callbacks))
 {
 	other.window = nullptr;
 	other.callbacks = nullptr;
 }
 
 
-Window& Window::operator=(Window&& other) {
+Window& Window::operator=(Window&& other) noexcept {
 
-	dealloc();
+	this->~Window();
 
 	window = std::move(other.window);
 	callbacks = std::move(other.callbacks);
@@ -104,11 +104,6 @@ Window& Window::operator=(Window&& other) {
 
 
 Window::~Window() {
-	dealloc();
-}
-
-
-void Window::dealloc() {
 	glfwDestroyWindow(window);
 }
 

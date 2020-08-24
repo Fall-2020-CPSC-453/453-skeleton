@@ -13,12 +13,11 @@ public:
 	VertexArray operator=(const VertexArray&) = delete;
 
 	// Moving is allowed
-	VertexArray(VertexArray&& other);
-	VertexArray& operator=(VertexArray&& other);
+	VertexArray(VertexArray&& other) noexcept;
+	VertexArray& operator=(VertexArray&& other) noexcept;
 
 	// Destructor to cleanup resources on GPU
 	~VertexArray();
-	void dealloc();
 
 
 	// Public interface

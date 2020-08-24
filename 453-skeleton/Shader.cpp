@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+#include "Log.h"
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -8,29 +10,28 @@
 #include <vector>
 
 
-Shader::Shader(std::string path, GLenum type) :
-	type(type),
-	path(path)
+Shader::Shader(std::string path, GLenum type)
+	: type(type)
+	, path(path)
 {
 	if (!compile()) {
-		glDeleteShader(shaderID);
 		throw std::runtime_error("Shader did not compile");
 	}
 }
 
 
-Shader::Shader(Shader&& other) :
-	shaderID(std::move(other.shaderID)),
-	type(std::move(other.type)),
-	path(std::move(other.path))
+Shader::Shader(Shader&& other) noexcept
+	: shaderID(std::move(other.shaderID))
+	, type(std::move(other.type))
+	, path(std::move(other.path))
 {
 	other.shaderID = 0;
 }
 
 
-Shader& Shader::operator=(Shader&& other) {
+Shader& Shader::operator=(Shader&& other) noexcept {
 
-	dealloc();
+	this->~Shader();
 
 	shaderID = std::move(other.shaderID);
 	type = std::move(other.type);
@@ -42,11 +43,6 @@ Shader& Shader::operator=(Shader&& other) {
 
 
 Shader::~Shader() {
-	dealloc();
-}
-
-
-void Shader::dealloc() {
 	glDeleteShader(shaderID);
 }
 
@@ -74,8 +70,7 @@ bool Shader::compile() {
 		sourceString = sourceStream.str();
 	}
 	catch (std::ifstream::failure &e) {
-		std::cerr << "ERROR::SHADER reading " << path << ":" << std::endl;
-		std::cerr << strerror(errno) << std::endl;
+		Log::error("SHADER reading {}:\n{}", path, strerror(errno));
 		return false;
 	}
 	const GLchar* sourceCode = sourceString.c_str();
@@ -96,8 +91,7 @@ bool Shader::compile() {
 		std::vector<char> log(logLength);
 		glGetShaderInfoLog(shaderID, logLength, NULL, log.data());
 
-		std::cerr << "ERROR::SHADER compiling " << path << ":" << std::endl;
-		std::cerr << log.data() << std::endl;
+		Log::error("SHADER compiling {}:\n{}", path, log.data());
 	}
 	return success;
 }

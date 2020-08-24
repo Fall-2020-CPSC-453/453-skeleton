@@ -17,12 +17,11 @@ public:
 	ShaderProgram operator=(const ShaderProgram&) = delete;
 
 	// Moving is allowed
-	ShaderProgram(ShaderProgram&& other);
-	ShaderProgram& operator=(ShaderProgram&& other);
+	ShaderProgram(ShaderProgram&& other) noexcept;
+	ShaderProgram& operator=(ShaderProgram&& other) noexcept;
 
 	// Destructor to cleanup resources on GPU
 	~ShaderProgram();
-	void dealloc();
 
 
 	// Public interface

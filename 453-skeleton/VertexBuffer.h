@@ -13,12 +13,11 @@ public:
 	VertexBuffer operator=(const VertexBuffer&) = delete;
 
 	// Moving is allowed
-	VertexBuffer(VertexBuffer&& other);
-	VertexBuffer& operator=(VertexBuffer&& other);
+	VertexBuffer(VertexBuffer&& other) noexcept;
+	VertexBuffer& operator=(VertexBuffer&& other) noexcept;
 
 	// Destructor to cleanup resources on GPU
 	~VertexBuffer();
-	void dealloc();
 
 
 	// Public interface

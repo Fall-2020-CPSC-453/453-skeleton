@@ -11,16 +11,16 @@ VertexBuffer::VertexBuffer(GLuint index, GLint size, GLenum dataType) {
 }
 
 
-VertexBuffer::VertexBuffer(VertexBuffer&& other) :
-	bufferID(std::move(other.bufferID))
+VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
+	: bufferID(std::move(other.bufferID))
 {
 	other.bufferID = 0;
 }
 
 
-VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) {
+VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept {
 	
-	dealloc();
+	this->~VertexBuffer();
 
 	bufferID = std::move(other.bufferID);
 
@@ -30,11 +30,6 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) {
 
 
 VertexBuffer::~VertexBuffer() {
-	dealloc();
-}
-
-
-void VertexBuffer::dealloc() {
 	glDeleteBuffers(1, &bufferID);
 }
 

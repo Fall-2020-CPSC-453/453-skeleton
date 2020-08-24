@@ -12,6 +12,7 @@
 #include "GLDebug.h"
 #include "Log.h"
 
+
 // EXAMPLE CALLBACKS
 class MyCallbacks : public CallbackInterface {
 
@@ -48,7 +49,6 @@ int main() {
 	// WINDOW
 	glfwInit();
 	Window window(800, 800, "CPSC 453"); // can set callbacks at construction if desired
-
 
 	GLDebug::enable();
 

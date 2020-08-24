@@ -9,16 +9,16 @@ VertexArray::VertexArray() {
 }
 
 
-VertexArray::VertexArray(VertexArray&& other) :
-	arrayID(std::move(other.arrayID))
+VertexArray::VertexArray(VertexArray&& other) noexcept
+	: arrayID(std::move(other.arrayID))
 {
 	other.arrayID = 0;
 }
 
 
-VertexArray& VertexArray::operator=(VertexArray&& other) {
+VertexArray& VertexArray::operator=(VertexArray&& other) noexcept {
 
-	dealloc();
+	this->~VertexArray();
 
 	arrayID = std::move(other.arrayID);
 
@@ -28,10 +28,5 @@ VertexArray& VertexArray::operator=(VertexArray&& other) {
 
 
 VertexArray::~VertexArray() {
-	dealloc();
-}
-
-
-void VertexArray::dealloc() {
 	glDeleteVertexArrays(1, &arrayID);
 }

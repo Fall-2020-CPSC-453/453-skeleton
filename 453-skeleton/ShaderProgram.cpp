@@ -7,18 +7,15 @@
 #include "Log.h"
 
 
-ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath) :
-	vertex(vertexPath, GL_VERTEX_SHADER),
-	fragment(fragmentPath, GL_FRAGMENT_SHADER)
+ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath)
+	: vertex(vertexPath, GL_VERTEX_SHADER)
+	, fragment(fragmentPath, GL_FRAGMENT_SHADER)
 {
 	programID = glCreateProgram();
 
 	vertex.attach(programID);
 	fragment.attach(programID);
 	glLinkProgram(programID);
-
-	vertex.dealloc();
-	fragment.dealloc();
 
 	if (!checkLinkSuccess(programID)) {
 		glDeleteProgram(programID);
@@ -27,18 +24,18 @@ ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath) :
 }
 
 
-ShaderProgram::ShaderProgram(ShaderProgram&& other) :
-	programID(std::move(other.programID)),
-	vertex(std::move(other.vertex)),
-	fragment(std::move(other.fragment))
+ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
+	: programID(std::move(other.programID))
+	, vertex(std::move(other.vertex))
+	, fragment(std::move(other.fragment))
 {
 	other.programID = 0;
 }
 
 
-ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) {
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept {
 
-	dealloc();
+	this->~ShaderProgram();
 
 	programID = std::move(other.programID);
 	vertex = std::move(other.vertex);
@@ -50,11 +47,6 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) {
 
 
 ShaderProgram::~ShaderProgram() {
-	dealloc();
-}
-
-
-void ShaderProgram::dealloc() {
 	glDeleteProgram(programID);
 }
 
@@ -62,31 +54,10 @@ void ShaderProgram::dealloc() {
 bool ShaderProgram::recompile() {
 
 	try {
-		Shader newVertex(vertex.getPath(), GL_VERTEX_SHADER);
-		Shader newFragment(fragment.getPath(), GL_FRAGMENT_SHADER);
-
-		GLuint newProgramID = glCreateProgram();
-
-		newVertex.attach(newProgramID);
-		newFragment.attach(newProgramID);
-		glLinkProgram(newProgramID);
-
-		newVertex.dealloc();
-		newFragment.dealloc();
-
-		if (checkLinkSuccess(newProgramID)) {
-
-			vertex = std::move(newVertex);
-			fragment = std::move(newFragment);
-
-			glDeleteProgram(programID);
-			programID = newProgramID;
-			return true;
-		}
-		else {
-			Log::warn("SHADER_PROGRAM falling back to previous version of shaders");
-			return false;
-		}
+		// Try to create a new program
+		ShaderProgram newProgram(vertex.getPath(), fragment.getPath());
+		*this = std::move(newProgram);
+		return true;
 	}
 	catch (std::runtime_error &e) {
 		Log::warn("SHADER_PROGRAM falling back to previous version of shaders");

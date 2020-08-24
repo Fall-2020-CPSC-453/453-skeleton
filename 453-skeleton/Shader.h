@@ -15,12 +15,11 @@ public:
 	Shader operator=(const Shader&) = delete;
 
 	// Moving is allowed
-	Shader(Shader&& other);
-	Shader& operator=(Shader&& other);
+	Shader(Shader&& other) noexcept;
+	Shader& operator=(Shader&& other) noexcept;
 
 	// Destructor to cleanup resources on GPU
 	~Shader();
-	void dealloc();
 
 
 	// Public interface
