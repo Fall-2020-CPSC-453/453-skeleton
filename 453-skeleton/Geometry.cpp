@@ -1,12 +1,10 @@
 #include "Geometry.h"
 
-#include <utility>
 
-
-GPU_Geometry::GPU_Geometry() :
-	vao(),
-	vertBuffer(0, 3, GL_FLOAT),
-	colBuffer(1, 3, GL_FLOAT)
+GPU_Geometry::GPU_Geometry()
+	: vao()
+	, vertBuffer(0, 3, GL_FLOAT)
+	, colBuffer(1, 3, GL_FLOAT)
 {}
 
 

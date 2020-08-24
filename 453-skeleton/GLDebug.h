@@ -1,5 +1,4 @@
 #pragma once
-#include "GL/glew.h"
 
 //------------------------------------------------------------------------------
 // OpenGL has a mechanism where you can turn on debug mode and it will tell you
@@ -8,6 +7,8 @@
 // We are going to use it (best we can) to give you advanced warning of when you
 // are doing something incorrectly.
 //------------------------------------------------------------------------------
+
+#include "GL/glew.h"
 
 
 namespace GLDebug {

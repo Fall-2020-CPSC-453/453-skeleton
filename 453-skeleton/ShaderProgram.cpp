@@ -1,16 +1,15 @@
 #include "ShaderProgram.h"
 
 #include <iostream>
-#include <stdexcept>
 #include <vector>
 
 #include "Log.h"
 
 
-ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath) :
-	programID{},
-	vertex(vertexPath, GL_VERTEX_SHADER),
-	fragment(fragmentPath, GL_FRAGMENT_SHADER)
+ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath)
+	: programID()
+	, vertex(vertexPath, GL_VERTEX_SHADER)
+	, fragment(fragmentPath, GL_FRAGMENT_SHADER)
 {
 	attach(vertex);
 	attach(fragment);
@@ -21,14 +20,15 @@ ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath) :
 	}
 }
 
+
 bool ShaderProgram::recompile() {
 	try {
 		// Try to create a new program
-		ShaderProgram newProgram{vertex.getPath(), fragment.getPath()};
+		ShaderProgram newProgram(vertex.getPath(), fragment.getPath());
 		*this = std::move(newProgram);
 		return true;
 	}
-	catch (ShaderCompileException &e) {
+	catch (ShaderCompileException) {
 		Log::warn("SHADER_PROGRAM falling back to previous version of shaders");
 		return false;
 	}

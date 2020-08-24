@@ -1,7 +1,5 @@
 #pragma once
 
-#include <functional>
-
 //------------------------------------------------------------------------------
 // An RAII wrapper around a resource that is not a pointer.
 //
@@ -11,42 +9,48 @@
 // can be safely called on the default value.
 //------------------------------------------------------------------------------
 
+#include <functional>
+
+
 template <typename T>
 class Handle {
-	public:
-		using HandleDestructor = std::function<void(T)>;
 
-		template <typename D, typename C, typename ...Args>
-		Handle(D &&d, C &&c, Args&&... args)
-			: resource(c(std::forward<Args>(args)...))
-			, destructor(d)
-		{}
+public:
+	using HandleDestructor = std::function<void(T)>;
 
-		~Handle() {
-			destructor(resource);
-		}
+	template <typename D, typename C, typename ...Args>
+	Handle(D &&destructor, C &&constructor, Args&&... args)
+		: resource(constructor(std::forward<Args>(args)...))
+		, destructor(destructor)
+	{}
 
+	~Handle() {
+		destructor(resource);
+	}
 
-		Handle(const Handle<T> &h) = delete;
-		Handle<T> &operator=(const Handle<T> &h) = delete;
+	// Copying not allowed
+	Handle(const Handle<T> &h) = delete;
+	Handle<T> &operator=(const Handle<T> &h) = delete;
 
-		Handle(Handle<T> &&other)
-			: resource{other.resource}
-		{
-			other.resource = {};
-		}
+	// Moving allowed
+	Handle(Handle<T> &&other)
+		: resource(other.resource)
+	{
+		other.resource = {};
+	}
 
-		Handle<T> &operator=(Handle<T> &&other) {
-			destructor(resource);
-			resource = other.resource;
-			other.resource = {};
-			return *this;
-		}
+	Handle<T> &operator=(Handle<T> &&other) {
+		destructor(resource);
+		resource = std::move(other.resource);
+		other.resource = {};
+		return *this;
+	}
 
-		operator T() const { return resource; }
-		T value() const { return resource; }
+	// Getters for the resource
+	operator T() const { return resource; }
+	T value() const { return resource; }
 
-	private:
-		T resource;
-		HandleDestructor destructor;
+private:
+	T resource;
+	HandleDestructor destructor;
 };

@@ -18,7 +18,6 @@
 #include <vivid/vivid.h>
 
 
-
 namespace Log {
 	namespace ansi = vivid::ansi;
 	template <typename S1, typename S2, typename S3, typename... Args>
@@ -31,7 +30,6 @@ namespace Log {
 			fmt::format(format_str, std::forward<Args>(args)...)
 		);
 	}
-
 
 	template <typename S, typename... Args>
 	void debug(const S &format_str, Args&&... args) {
@@ -56,6 +54,4 @@ namespace Log {
 	void error(const S &format_str, Args&&... args) {
 		_log("ERROR", ansi::red, format_str, args...);
 	}
-
-
 }

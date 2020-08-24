@@ -26,8 +26,8 @@ public:
 	Window operator=(const Window&) = delete;
 
 	// Moving is allowed
-	Window(Window&& other);
-	Window& operator=(Window&& other);
+	Window(Window&& other) noexcept;
+	Window& operator=(Window&& other) noexcept;
 
 	// Destructor to cleanup created window
 	~Window();

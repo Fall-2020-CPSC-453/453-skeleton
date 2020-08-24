@@ -1,7 +1,8 @@
 #include "VertexArray.h"
 
+
 VertexArray::VertexArray()
-	: arrayID{}
+	: arrayID()
 {
 	glBindVertexArray(arrayID);
 }

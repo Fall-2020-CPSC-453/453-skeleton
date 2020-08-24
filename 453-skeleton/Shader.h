@@ -7,7 +7,7 @@
 #include <string>
 
 
-class ShaderCompileException: public std::runtime_error {
+class ShaderCompileException : public std::runtime_error {
 public:
 	explicit ShaderCompileException(const char* message)
 		: std::runtime_error(message)
@@ -23,14 +23,6 @@ class Shader {
 
 public:
 	Shader(std::string path, GLenum type);
-
-	// Copying not allowed
-	Shader(const Shader&) = delete;
-	Shader operator=(const Shader&) = delete;
-
-	// Moving is allowed
-	Shader(Shader&& other) = default;
-	Shader& operator=(Shader&& other) = default;
 
 	// Public interface
 	std::string getPath() const { return path; }

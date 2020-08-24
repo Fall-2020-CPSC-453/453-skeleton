@@ -8,7 +8,7 @@
 #include <string>
 
 
-class ShaderLinkException: public std::runtime_error {
+class ShaderLinkException : public std::runtime_error {
 public:
 	explicit ShaderLinkException(const char* message)
 		: std::runtime_error(message)
@@ -23,14 +23,6 @@ class ShaderProgram {
 
 public:
 	ShaderProgram(std::string vertexPath, std::string fragmentPath);
-
-	// Copying not allowed
-	ShaderProgram(const ShaderProgram&) = delete;
-	ShaderProgram operator=(const ShaderProgram&) = delete;
-
-	// Moving is allowed
-	ShaderProgram(ShaderProgram&& other) = default;
-	ShaderProgram& operator=(ShaderProgram&& other) = default;
 
 	// Public interface
 	bool recompile();

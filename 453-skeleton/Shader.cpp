@@ -4,14 +4,15 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include <vector>
 
+#include "Log.h"
 
-Shader::Shader(std::string path, GLenum type) :
-	shaderID{type},
-	type(type),
-	path(path)
+
+Shader::Shader(std::string path, GLenum type)
+	: shaderID(type)
+	, type(type)
+	, path(path)
 {
 	if (!compile()) {
 		throw ShaderCompileException("Shader did not compile");
@@ -40,9 +41,8 @@ bool Shader::compile() {
 		// convert stream into string
 		sourceString = sourceStream.str();
 	}
-	catch (std::ifstream::failure &e) {
-		std::cerr << "ERROR::SHADER reading " << path << ":" << std::endl;
-		std::cerr << strerror(errno) << std::endl;
+	catch (std::ifstream::failure) {
+		Log::error("SHADER reading {}:\n{}", path, strerror(errno));
 		return false;
 	}
 	const GLchar* sourceCode = sourceString.c_str();
@@ -62,8 +62,7 @@ bool Shader::compile() {
 		std::vector<char> log((size_t)logLength);
 		glGetShaderInfoLog(shaderID, logLength, NULL, log.data());
 
-		std::cerr << "ERROR::SHADER compiling " << path << ":" << std::endl;
-		std::cerr << log.data() << std::endl;
+		Log::error("SHADER compiling {}:\n{}", path, log.data());
 	}
 	return success;
 }
