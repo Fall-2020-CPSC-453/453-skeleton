@@ -8,87 +8,27 @@
 
 
 ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath) :
+	programID{},
 	vertex(vertexPath, GL_VERTEX_SHADER),
 	fragment(fragmentPath, GL_FRAGMENT_SHADER)
 {
-	programID = glCreateProgram();
-
-	vertex.attach(programID);
-	fragment.attach(programID);
+	attach(vertex);
+	attach(fragment);
 	glLinkProgram(programID);
 
-	vertex.dealloc();
-	fragment.dealloc();
-
 	if (!checkLinkSuccess(programID)) {
-		glDeleteProgram(programID);
-		throw std::runtime_error("Shaders did not link.");
+		throw ShaderLinkException("Shaders did not link.");
 	}
 }
-
-
-ShaderProgram::ShaderProgram(ShaderProgram&& other) :
-	programID(std::move(other.programID)),
-	vertex(std::move(other.vertex)),
-	fragment(std::move(other.fragment))
-{
-	other.programID = 0;
-}
-
-
-ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) {
-
-	dealloc();
-
-	programID = std::move(other.programID);
-	vertex = std::move(other.vertex);
-	fragment = std::move(other.fragment);
-
-	other.programID = 0;
-	return *this;
-}
-
-
-ShaderProgram::~ShaderProgram() {
-	dealloc();
-}
-
-
-void ShaderProgram::dealloc() {
-	glDeleteProgram(programID);
-}
-
 
 bool ShaderProgram::recompile() {
-
 	try {
-		Shader newVertex(vertex.getPath(), GL_VERTEX_SHADER);
-		Shader newFragment(fragment.getPath(), GL_FRAGMENT_SHADER);
-
-		GLuint newProgramID = glCreateProgram();
-
-		newVertex.attach(newProgramID);
-		newFragment.attach(newProgramID);
-		glLinkProgram(newProgramID);
-
-		newVertex.dealloc();
-		newFragment.dealloc();
-
-		if (checkLinkSuccess(newProgramID)) {
-
-			vertex = std::move(newVertex);
-			fragment = std::move(newFragment);
-
-			glDeleteProgram(programID);
-			programID = newProgramID;
-			return true;
-		}
-		else {
-			Log::warn("SHADER_PROGRAM falling back to previous version of shaders");
-			return false;
-		}
+		// Try to create a new program
+		ShaderProgram newProgram{vertex.getPath(), fragment.getPath()};
+		*this = std::move(newProgram);
+		return true;
 	}
-	catch (std::runtime_error &e) {
+	catch (ShaderCompileException &e) {
 		Log::warn("SHADER_PROGRAM falling back to previous version of shaders");
 		return false;
 	}
@@ -109,7 +49,7 @@ bool ShaderProgram::checkLinkSuccess(GLuint ID) {
 	if (!success) {
 		GLint logLength;
 		glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &logLength);
-		std::vector<char> log(logLength);
+		std::vector<char> log((size_t)logLength);
 		glGetProgramInfoLog(ID, logLength, NULL, log.data());
 
 		Log::error("SHADER_PROGRAM linking {} + {}:\n{}", vertex.getPath(), fragment.getPath(), log.data());

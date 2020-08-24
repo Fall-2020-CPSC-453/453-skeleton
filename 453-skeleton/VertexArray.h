@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+#include "GLHandles.h"
+
 
 class VertexArray {
 
@@ -13,17 +15,13 @@ public:
 	VertexArray operator=(const VertexArray&) = delete;
 
 	// Moving is allowed
-	VertexArray(VertexArray&& other);
-	VertexArray& operator=(VertexArray&& other);
-
-	// Destructor to cleanup resources on GPU
-	~VertexArray();
-	void dealloc();
+	VertexArray(VertexArray&& other) = default;
+	VertexArray& operator=(VertexArray&& other) = default;
 
 
 	// Public interface
 	void bind() { glBindVertexArray(arrayID); }
 
 private:
-	GLuint arrayID;
+	VertexArrayID arrayID;
 };
