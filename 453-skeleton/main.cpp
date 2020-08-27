@@ -1,16 +1,14 @@
-#include "Geometry.h"
-#include "ShaderProgram.h"
-#include "Window.h"
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
 
-#include "Shader.h"
-#include "Window.h"
+#include "Geometry.h"
 #include "GLDebug.h"
 #include "Log.h"
+#include "ShaderProgram.h"
+#include "Shader.h"
+#include "Window.h"
 
 
 // EXAMPLE CALLBACKS
@@ -41,7 +39,6 @@ public:
 	}
 };
 // END EXAMPLES
-
 
 int main() {
 	Log::debug("Starting main");

@@ -1,7 +1,7 @@
 # Own stuff here
 build
 compile_commands.json
-
+CMakeSettings.json
 
 # Created by https://www.gitignore.io/api/visualstudio
 
