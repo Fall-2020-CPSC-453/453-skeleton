@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\src\format.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\src\os.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\chrono.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\compile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\format-inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\locale.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\os.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\ostream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\posix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\printf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\include\fmt\ranges.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\README.rst" />
+    <None Include="D:\code\453-skeleton\thirdparty\fmt-7.0.3\ChangeLog.rst" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9457E296-6A47-35FA-9FFD-4C93A92AF805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ED834AB3-4C52-3369-9054-1243C69FFFDE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

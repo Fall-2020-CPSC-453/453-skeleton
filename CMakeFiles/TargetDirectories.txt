@@ -1,0 +1,12 @@
+D:/code/453-skeleton/CMakeFiles/453-skeleton.dir
+D:/code/453-skeleton/CMakeFiles/INSTALL.dir
+D:/code/453-skeleton/CMakeFiles/ALL_BUILD.dir
+D:/code/453-skeleton/CMakeFiles/ZERO_CHECK.dir
+D:/code/453-skeleton/thirdparty/glfw-3.3.2/CMakeFiles/uninstall.dir
+D:/code/453-skeleton/thirdparty/glfw-3.3.2/CMakeFiles/INSTALL.dir
+D:/code/453-skeleton/thirdparty/glfw-3.3.2/CMakeFiles/ALL_BUILD.dir
+D:/code/453-skeleton/thirdparty/glfw-3.3.2/src/CMakeFiles/glfw.dir
+D:/code/453-skeleton/thirdparty/glfw-3.3.2/src/CMakeFiles/INSTALL.dir
+D:/code/453-skeleton/thirdparty/fmt-7.0.3/CMakeFiles/INSTALL.dir
+D:/code/453-skeleton/thirdparty/fmt-7.0.3/CMakeFiles/fmt.dir
+D:/code/453-skeleton/thirdparty/fmt-7.0.3/CMakeFiles/ALL_BUILD.dir
