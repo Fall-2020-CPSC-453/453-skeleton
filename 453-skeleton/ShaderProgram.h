@@ -10,7 +10,7 @@
 class ShaderProgram {
 
 public:
-	ShaderProgram(std::string vertexPath, std::string fragmentPath);
+	ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath);
 
 	// Copying not allowed
 	ShaderProgram(const ShaderProgram&) = delete;
@@ -26,15 +26,15 @@ public:
 
 	// Public interface
 	bool recompile();
-	void use() const;
+	void use() const { glUseProgram(programID); }
 
 	void friend attach(ShaderProgram& sp, Shader& s);
 
 private:
-	bool checkLinkSuccess(GLuint ID);
-
 	GLint programID;
 
 	Shader vertex;
 	Shader fragment;
+
+	bool checkAndLogLinkSuccess() const;
 };

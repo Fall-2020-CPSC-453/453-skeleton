@@ -7,7 +7,7 @@
 #include "Log.h"
 
 
-ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath)
+ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
 	: vertex(vertexPath, GL_VERTEX_SHADER)
 	, fragment(fragmentPath, GL_FRAGMENT_SHADER)
 {
@@ -17,7 +17,7 @@ ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath)
 	attach(*this, fragment);
 	glLinkProgram(programID);
 
-	if (!checkLinkSuccess(programID)) {
+	if (!checkAndLogLinkSuccess()) {
 		glDeleteProgram(programID);
 		throw std::runtime_error("Shaders did not link.");
 	}
@@ -66,30 +66,23 @@ bool ShaderProgram::recompile() {
 }
 
 
-void ShaderProgram::use() const {
-	glUseProgram(programID);
-}
-
-
 void attach(ShaderProgram& sp, Shader& s) {
 	glAttachShader(sp.programID, s.shaderID);
 }
 
 
-bool ShaderProgram::checkLinkSuccess(GLuint ID) {
+bool ShaderProgram::checkAndLogLinkSuccess() const {
 
 	GLint success;
 
-	// check for link errors
-	glGetProgramiv(ID, GL_LINK_STATUS, &success);
+	glGetProgramiv(programID, GL_LINK_STATUS, &success);
 	if (!success) {
 		GLint logLength;
-		glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &logLength);
+		glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &logLength);
 		std::vector<char> log(logLength);
-		glGetProgramInfoLog(ID, logLength, NULL, log.data());
+		glGetProgramInfoLog(programID, logLength, NULL, log.data());
 
 		Log::error("SHADER_PROGRAM linking {} + {}:\n{}", vertex.getPath(), fragment.getPath(), log.data());
-
 		return false;
 	}
 	else {

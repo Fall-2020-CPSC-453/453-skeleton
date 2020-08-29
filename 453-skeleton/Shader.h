@@ -9,7 +9,7 @@ class ShaderProgram;
 class Shader {
 
 public:
-	Shader(std::string path, GLenum type);
+	Shader(const std::string& path, GLenum type);
 
 	// Copying not allowed
 	Shader(const Shader&) = delete;
@@ -28,7 +28,6 @@ public:
 	GLenum getType() const { return type; }
 
 	void friend attach(ShaderProgram& sp, Shader& s);
-	//void attach(GLuint programID) { glAttachShader(programID, shaderID); }
 
 private:
 	GLuint shaderID;

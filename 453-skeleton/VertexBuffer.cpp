@@ -5,7 +5,7 @@
 
 VertexBuffer::VertexBuffer(GLuint index, GLint size, GLenum dataType) {
 	glGenBuffers(1, &bufferID);
-	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+	bind();
 	glVertexAttribPointer(index, size, dataType, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(index);
 }
@@ -35,6 +35,6 @@ VertexBuffer::~VertexBuffer() {
 
 
 void VertexBuffer::uploadData(GLsizeiptr size, const void* data, GLenum usage) {
-	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+	bind();
 	glBufferData(GL_ARRAY_BUFFER, size, data, usage);
 }

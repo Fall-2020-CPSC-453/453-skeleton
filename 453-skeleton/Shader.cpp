@@ -10,7 +10,7 @@
 #include <vector>
 
 
-Shader::Shader(std::string path, GLenum type)
+Shader::Shader(const std::string& path, GLenum type)
 	: type(type)
 	, path(path)
 {
