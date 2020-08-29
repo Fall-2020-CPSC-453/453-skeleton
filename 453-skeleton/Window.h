@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include <memory>
+
 
 class CallbackInterface {
 public:
@@ -15,26 +17,23 @@ public:
 };
 
 
+struct WindowDeleter {
+	void operator() (GLFWwindow* window) const {
+		glfwDestroyWindow(window);
+	}
+};
+
+
 class Window {
 
 public:
+	Window(
+		std::shared_ptr<CallbackInterface> callbacks, int width, int height,
+		const char* title, GLFWmonitor* monitor = NULL, GLFWwindow* share = NULL
+	);
 	Window(int width, int height, const char* title, GLFWmonitor* monitor = NULL, GLFWwindow* share = NULL);
-	Window(CallbackInterface* callbacks, int width, int height, const char* title, GLFWmonitor* monitor = NULL, GLFWwindow* share = NULL);
 
-	// Copying not allowed
-	Window(const Window&) = delete;
-	Window operator=(const Window&) = delete;
-
-	// Moving is allowed
-	Window(Window&& other) noexcept;
-	Window& operator=(Window&& other) noexcept;
-
-	// Destructor to cleanup created window
-	~Window();
-
-
-	// Public interface
-	void setCallbacks(CallbackInterface* callbacks);
+	void setCallbacks(std::shared_ptr<CallbackInterface> callbacks);
 
 	glm::ivec2 getPos() const;
 	glm::ivec2 getSize() const;
@@ -45,17 +44,19 @@ public:
 	int getWidth() const { return getSize().x; }
 	int getHeight() const { return getSize().y; }
 
-	int shouldClose() { return glfwWindowShouldClose(window); }
-	void makeContextCurrent() { glfwMakeContextCurrent(window); }
-	void swapBuffers() { glfwSwapBuffers(window); }
+	int shouldClose() { return glfwWindowShouldClose(window.get()); }
+	void makeContextCurrent() { glfwMakeContextCurrent(window.get()); }
+	void swapBuffers() { glfwSwapBuffers(window.get()); }
 
 private:
-	GLFWwindow* window;           // owning ptr from glfw
-	CallbackInterface* callbacks; // non-owning optional ptr (user provided)
+	std::unique_ptr<GLFWwindow, WindowDeleter> window; // owning ptr (from GLFW)
+	std::shared_ptr<CallbackInterface> callbacks;      // optional shared owning ptr (user provided)
+
+	void connectCallbacks();
 
 	static void defaultWindowSizeCallback(GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); }
 
-	// Meta callback functions. These bind to the actual glfw callback
+	// Meta callback functions. These bind to the actual glfw callback,
 	// get the actual callback method from user data, and then call that.
 	static void keyMetaCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mouseButtonMetaCallback(GLFWwindow* window, int button, int action, int mods);

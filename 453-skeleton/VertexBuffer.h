@@ -21,8 +21,8 @@ public:
 
 
 	// Public interface
-	void bind() { glBindBuffer(GL_ARRAY_BUFFER, bufferID); }
-	void uploadData(GLsizeiptr size, void* data, GLenum usage);
+	void bind() const { glBindBuffer(GL_ARRAY_BUFFER, bufferID); }
+	void uploadData(GLsizeiptr size, const void* data, GLenum usage);
 
 private:
 	GLuint bufferID;

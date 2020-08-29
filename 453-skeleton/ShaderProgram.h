@@ -28,6 +28,8 @@ public:
 	bool recompile();
 	void use() const;
 
+	void friend attach(ShaderProgram& sp, Shader& s);
+
 private:
 	bool checkLinkSuccess(GLuint ID);
 

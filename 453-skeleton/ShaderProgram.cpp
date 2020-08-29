@@ -13,8 +13,8 @@ ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath)
 {
 	programID = glCreateProgram();
 
-	vertex.attach(programID);
-	fragment.attach(programID);
+	attach(*this, vertex);
+	attach(*this, fragment);
 	glLinkProgram(programID);
 
 	if (!checkLinkSuccess(programID)) {
@@ -68,6 +68,11 @@ bool ShaderProgram::recompile() {
 
 void ShaderProgram::use() const {
 	glUseProgram(programID);
+}
+
+
+void attach(ShaderProgram& sp, Shader& s) {
+	glAttachShader(sp.programID, s.shaderID);
 }
 
 

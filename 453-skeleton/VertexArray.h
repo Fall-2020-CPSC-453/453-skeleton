@@ -21,7 +21,7 @@ public:
 
 
 	// Public interface
-	void bind() { glBindVertexArray(arrayID); }
+	void bind() const { glBindVertexArray(arrayID); }
 
 private:
 	GLuint arrayID;

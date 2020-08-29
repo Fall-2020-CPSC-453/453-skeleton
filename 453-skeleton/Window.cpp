@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include "Log.h"
+
 #include <iostream>
 
 
@@ -41,8 +43,12 @@ void Window::windowSizeMetaCallback(GLFWwindow* window, int width, int height) {
 // non-static definitions
 // **********************
 
-Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
-	: callbacks(nullptr)
+Window::Window(
+	std::shared_ptr<CallbackInterface> callbacks, int width, int height,
+	const char* title, GLFWmonitor* monitor, GLFWwindow* share
+)
+	: window(nullptr)
+	, callbacks(callbacks)
 {
 	// specify OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -52,85 +58,61 @@ Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, G
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 	// create window
-	window = glfwCreateWindow(width, height, title, monitor, share);
-	if (window == NULL) {
-		std::cerr << "ERROR::WINDOW failed to create GLFW window" << std::endl;
-		glfwTerminate();
-
+	window = std::unique_ptr<GLFWwindow, WindowDeleter>(glfwCreateWindow(width, height, title, monitor, share));
+	if (window == nullptr) {
+		Log::error("WINDOW failed to create GLFW window");
 		throw std::runtime_error("Failed to create GLFW window.");
 	}
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(window.get());
 
 	// initialize OpenGL extensions for the current context (this window)
 	GLenum err = glewInit();
 	if (err != GLEW_OK) {
-		std::cerr << "ERROR::WINDOW glewInit error: " << glewGetErrorString(err) << std::endl;
-
+		Log::error("WINDOW glewInit error:{}", glewGetErrorString(err));
 		throw std::runtime_error("Failed to initialize GLEW");
 	}
 
-	// set default window size callback
-	glfwSetWindowSizeCallback(window, defaultWindowSizeCallback);
+	glfwSetWindowSizeCallback(window.get(), defaultWindowSizeCallback);
+
+	if (callbacks != nullptr) {
+		connectCallbacks();
+	}
 }
 
 
-Window::Window(CallbackInterface* callbacks, int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
-	: Window(width, height, title, monitor, share)
-{
-	setCallbacks(callbacks);
-}
+Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
+	: Window(nullptr, width, height, title, monitor, share)
+{}
 
 
-Window::Window(Window&& other) noexcept
-	: window(std::move(other.window))
-	, callbacks(std::move(other.callbacks))
-{
-	other.window = nullptr;
-	other.callbacks = nullptr;
-}
-
-
-Window& Window::operator=(Window&& other) noexcept {
-
-	this->~Window();
-
-	window = std::move(other.window);
-	callbacks = std::move(other.callbacks);
-
-	other.window = nullptr;
-	other.callbacks = nullptr;
-	return *this;
-}
-
-
-Window::~Window() {
-	glfwDestroyWindow(window);
-}
-
-
-void Window::setCallbacks(CallbackInterface* callbacks) {
-
+void Window::connectCallbacks() {
 	// set userdata of window to point to the object that carries out the callbacks
-	glfwSetWindowUserPointer(window, callbacks);
+	glfwSetWindowUserPointer(window.get(), callbacks.get());
 
 	// bind meta callbacks to actual callbacks
-	glfwSetKeyCallback(window, keyMetaCallback);
-	glfwSetMouseButtonCallback(window, mouseButtonMetaCallback);
-	glfwSetCursorPosCallback(window, cursorPosMetaCallback);
-	glfwSetScrollCallback(window, scrollMetaCallback);
-	glfwSetWindowSizeCallback(window, windowSizeMetaCallback);
+	glfwSetKeyCallback(window.get(), keyMetaCallback);
+	glfwSetMouseButtonCallback(window.get(), mouseButtonMetaCallback);
+	glfwSetCursorPosCallback(window.get(), cursorPosMetaCallback);
+	glfwSetScrollCallback(window.get(), scrollMetaCallback);
+	glfwSetWindowSizeCallback(window.get(), windowSizeMetaCallback);
+}
+
+
+void Window::setCallbacks(std::shared_ptr<CallbackInterface> callbacks_) {
+	callbacks = callbacks_;
+	connectCallbacks();
 }
 
 
 glm::ivec2 Window::getPos() const {
 	int x, y;
-	glfwGetWindowPos(window, &x, &y);
+	glfwGetWindowPos(window.get(), &x, &y);
 	return glm::ivec2(x, y);
 }
 
 
 glm::ivec2 Window::getSize() const {
 	int w, h;
-	glfwGetWindowSize(window, &w, &h);
+	glfwGetWindowSize(window.get(), &w, &h);
 	return glm::ivec2(w, h);
 }

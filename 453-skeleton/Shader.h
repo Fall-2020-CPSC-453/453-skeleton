@@ -4,6 +4,7 @@
 
 #include <string>
 
+class ShaderProgram;
 
 class Shader {
 
@@ -26,7 +27,8 @@ public:
 	std::string getPath() const { return path; }
 	GLenum getType() const { return type; }
 
-	void attach(GLuint programID) { glAttachShader(programID, shaderID); }
+	void friend attach(ShaderProgram& sp, Shader& s);
+	//void attach(GLuint programID) { glAttachShader(programID, shaderID); }
 
 private:
 	GLuint shaderID;

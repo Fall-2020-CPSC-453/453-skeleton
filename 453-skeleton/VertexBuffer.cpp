@@ -34,7 +34,7 @@ VertexBuffer::~VertexBuffer() {
 }
 
 
-void VertexBuffer::uploadData(GLsizeiptr size, void* data, GLenum usage) {
+void VertexBuffer::uploadData(GLsizeiptr size, const void* data, GLenum usage) {
 	glBindBuffer(GL_ARRAY_BUFFER, bufferID);
 	glBufferData(GL_ARRAY_BUFFER, size, data, usage);
 }

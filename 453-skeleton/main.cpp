@@ -53,8 +53,7 @@ int main() {
 	ShaderProgram shader("shaders/test.vert", "shaders/test.frag");
 
 	// CALLBACKS
-	MyCallbacks callbacks(shader);
-	window.setCallbacks(&callbacks); // can also update callbacks to new ones
+	window.setCallbacks(std::make_shared<MyCallbacks>(shader)); // can also update callbacks to new ones
 
 	// GEOMETRY
 	CPU_Geometry cpuGeom;

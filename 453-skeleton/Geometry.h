@@ -23,8 +23,8 @@ public:
 	// Public interface
 	void bind() { vao.bind(); }
 
-	void setVerts(std::vector<glm::vec3>& verts);
-	void setCols(std::vector<glm::vec3>& cols);
+	void setVerts(const std::vector<glm::vec3>& verts);
+	void setCols(const std::vector<glm::vec3>& cols);
 
 private:
 	// note: due to how OpenGL works, vao needs to be 
