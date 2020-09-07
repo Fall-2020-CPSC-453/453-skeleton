@@ -1,14 +1,6 @@
 #include "GLHandles.h"
 
-#include "Log.h"
-
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
-#include <vector>
-
+#include <algorithm> // For std::swap
 
 ShaderHandle::ShaderHandle(GLenum type)
 	: shaderID{glCreateShader(type)}
