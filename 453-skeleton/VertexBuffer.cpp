@@ -3,34 +3,12 @@
 #include <utility>
 
 
-VertexBuffer::VertexBuffer(GLuint index, GLint size, GLenum dataType) {
-	glGenBuffers(1, &bufferID);
+VertexBuffer::VertexBuffer(GLuint index, GLint size, GLenum dataType)
+	: bufferID{}
+{
 	bind();
 	glVertexAttribPointer(index, size, dataType, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(index);
-}
-
-
-VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
-	: bufferID(std::move(other.bufferID))
-{
-	other.bufferID = 0;
-}
-
-
-VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept {
-	
-	this->~VertexBuffer();
-
-	bufferID = std::move(other.bufferID);
-
-	other.bufferID = 0;
-	return *this;
-}
-
-
-VertexBuffer::~VertexBuffer() {
-	glDeleteBuffers(1, &bufferID);
 }
 
 

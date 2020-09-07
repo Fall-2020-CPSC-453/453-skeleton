@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GLHandles.h"
+
 #include <GL/glew.h>
 
 #include <string>
@@ -11,17 +13,12 @@ class Shader {
 public:
 	Shader(const std::string& path, GLenum type);
 
-	// Copying not allowed
-	Shader(const Shader&) = delete;
-	Shader operator=(const Shader&) = delete;
-
-	// Moving is allowed
-	Shader(Shader&& other) noexcept;
-	Shader& operator=(Shader&& other) noexcept;
-
-	// Destructor to cleanup resources on GPU
-	~Shader();
-
+	// Because we're using the ShaderHandle to do RAII for the shader for us
+	// and our other types are trivial or provide their own RAII
+	// we don't have to provide any specialized functions here. Rule of zero
+	//
+	// https://en.cppreference.com/w/cpp/language/rule_of_three
+	// https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rc-zero
 
 	// Public interface
 	std::string getPath() const { return path; }
@@ -30,7 +27,7 @@ public:
 	void friend attach(ShaderProgram& sp, Shader& s);
 
 private:
-	GLuint shaderID;
+	ShaderHandle shaderID;
 	GLenum type;
 
 	std::string path;
