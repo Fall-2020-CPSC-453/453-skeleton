@@ -13,17 +13,12 @@ class Shader {
 public:
 	Shader(const std::string& path, GLenum type);
 
-	// Copying not allowed
-	Shader(const Shader&) = delete;
-	Shader operator=(const Shader&) = delete;
-
-	// Moving is allowed
-	Shader(Shader&& other) noexcept = default;
-	Shader& operator=(Shader&& other) noexcept = default;
-
-	// Destructor to cleanup resources on GPU
-	~Shader() = default;
-
+	// Because we're using the ShaderHandle to do RAII for the shader for us
+	// and our other types are trivial or provide their own RAII
+	// we don't have to provide any specialized functions here. Rule of zero
+	//
+	// https://en.cppreference.com/w/cpp/language/rule_of_three
+	// https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rc-zero
 
 	// Public interface
 	std::string getPath() const { return path; }
