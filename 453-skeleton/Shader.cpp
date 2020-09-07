@@ -11,41 +11,14 @@
 
 
 Shader::Shader(const std::string& path, GLenum type)
-	: type(type)
+	: shaderID(type)
+	, type(type)
 	, path(path)
 {
 	if (!compile()) {
 		throw std::runtime_error("Shader did not compile");
 	}
 }
-
-
-Shader::Shader(Shader&& other) noexcept
-	: shaderID(std::move(other.shaderID))
-	, type(std::move(other.type))
-	, path(std::move(other.path))
-{
-	other.shaderID = 0;
-}
-
-
-Shader& Shader::operator=(Shader&& other) noexcept {
-
-	this->~Shader();
-
-	shaderID = std::move(other.shaderID);
-	type = std::move(other.type);
-	path = std::move(other.path);
-
-	other.shaderID = 0;
-	return *this;
-}
-
-
-Shader::~Shader() {
-	glDeleteShader(shaderID);
-}
-
 
 bool Shader::compile() {
 
@@ -77,7 +50,6 @@ bool Shader::compile() {
 
 
 	// compile shader
-	shaderID = glCreateShader(type);
 	glShaderSource(shaderID, 1, &sourceCode, NULL);
 	glCompileShader(shaderID);
 

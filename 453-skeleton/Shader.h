@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GLHandles.h"
+
 #include <GL/glew.h>
 
 #include <string>
@@ -16,11 +18,11 @@ public:
 	Shader operator=(const Shader&) = delete;
 
 	// Moving is allowed
-	Shader(Shader&& other) noexcept;
-	Shader& operator=(Shader&& other) noexcept;
+	Shader(Shader&& other) noexcept = default;
+	Shader& operator=(Shader&& other) noexcept = default;
 
 	// Destructor to cleanup resources on GPU
-	~Shader();
+	~Shader() = default;
 
 
 	// Public interface
@@ -30,7 +32,7 @@ public:
 	void friend attach(ShaderProgram& sp, Shader& s);
 
 private:
-	GLuint shaderID;
+	ShaderHandle shaderID;
 	GLenum type;
 
 	std::string path;
