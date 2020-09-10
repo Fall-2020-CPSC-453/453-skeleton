@@ -1,5 +1,10 @@
 #pragma once
 
+//------------------------------------------------------------------------------
+// This file contains classes that provide a simpler and safer interface for
+// interacting with a GLFW window following RAII principles
+//------------------------------------------------------------------------------
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -7,6 +12,10 @@
 #include <memory>
 
 
+// Class that specifies the interface for the most common GLFW callbacks
+//
+// These are the default implementations. You can write your own class that
+// extends this one and overrides the implementations with your own
 class CallbackInterface {
 public:
 	virtual void keyCallback(int key, int scancode, int action, int mods) {}
@@ -17,6 +26,10 @@ public:
 };
 
 
+// Functor for deleting a GLFW window.
+//
+// This is used as a custom deleter with std::unique_ptr so that the window
+// is properly destroyed when std::unique_ptr needs to clean up its resource
 struct WindowDeleter {
 	void operator() (GLFWwindow* window) const {
 		glfwDestroyWindow(window);
@@ -24,6 +37,8 @@ struct WindowDeleter {
 };
 
 
+// Main class for creating and interacting with a GLFW window.
+// Only wraps the most fundamental parts of the API
 class Window {
 
 public:

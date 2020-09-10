@@ -1,5 +1,11 @@
 #pragma once
 
+//------------------------------------------------------------------------------
+// This file contains simple classes for storing geomtery on the CPU and the GPU
+// Later assignments will require you to expand these classes or create your own
+// similar classes with the needed functionality
+//------------------------------------------------------------------------------
+
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 
@@ -9,12 +15,14 @@
 #include <vector>
 
 
+// List of vertices and colour using std::vector and glm::vec3
 struct CPU_Geometry {
 	std::vector<glm::vec3> verts;
 	std::vector<glm::vec3> cols;
 };
 
 
+// VAO and two VBOs for storing vertices and colours, respectively
 class GPU_Geometry {
 
 public:
