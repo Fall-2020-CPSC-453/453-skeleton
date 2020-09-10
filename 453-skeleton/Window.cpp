@@ -5,9 +5,9 @@
 #include <iostream>
 
 
-// ***************************
+// ---------------------------
 // static function definitions
-// ***************************
+// ---------------------------
 
 void Window::keyMetaCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	CallbackInterface* callbacks = static_cast<CallbackInterface*>(glfwGetWindowUserPointer(window));
@@ -39,9 +39,9 @@ void Window::windowSizeMetaCallback(GLFWwindow* window, int width, int height) {
 }
 
 
-// **********************
+// ----------------------
 // non-static definitions
-// **********************
+// ----------------------
 
 Window::Window(
 	std::shared_ptr<CallbackInterface> callbacks, int width, int height,
