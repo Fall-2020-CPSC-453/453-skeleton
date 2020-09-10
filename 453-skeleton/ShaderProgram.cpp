@@ -8,11 +8,10 @@
 
 
 ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
-	: vertex(vertexPath, GL_VERTEX_SHADER)
+	: programID()
+	, vertex(vertexPath, GL_VERTEX_SHADER)
 	, fragment(fragmentPath, GL_FRAGMENT_SHADER)
 {
-	programID = glCreateProgram();
-
 	attach(*this, vertex);
 	attach(*this, fragment);
 	glLinkProgram(programID);
@@ -22,34 +21,6 @@ ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& f
 		throw std::runtime_error("Shaders did not link.");
 	}
 }
-
-
-ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
-	: programID(std::move(other.programID))
-	, vertex(std::move(other.vertex))
-	, fragment(std::move(other.fragment))
-{
-	other.programID = 0;
-}
-
-
-ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept {
-
-	this->~ShaderProgram();
-
-	programID = std::move(other.programID);
-	vertex = std::move(other.vertex);
-	fragment = std::move(other.fragment);
-
-	other.programID = 0;
-	return *this;
-}
-
-
-ShaderProgram::~ShaderProgram() {
-	glDeleteProgram(programID);
-}
-
 
 bool ShaderProgram::recompile() {
 
