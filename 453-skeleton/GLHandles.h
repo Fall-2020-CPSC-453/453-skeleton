@@ -173,10 +173,6 @@ public:
 	// Clean up after ourselves.
 	~TextureHandle();
 
-	void bind();
-	void unbind();
-
-
 	// Allow casting from this type into a GLuint
 	// This allows usage in situations where a function expects a GLuint
 	operator GLuint() const;
@@ -184,6 +180,5 @@ public:
 
 private:
 	GLuint textureID;
-	static GLuint lastBoundTexture;
 
 };

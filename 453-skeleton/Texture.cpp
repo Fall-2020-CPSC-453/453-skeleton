@@ -15,7 +15,7 @@ Texture::Texture(std::string path, GLint interpolation)
 	{
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);		//Set alignment to be 1
 
-		textureID.bind();
+		bind();
 
 		//Set number of components by format of the texture
 		GLuint format = GL_RGB;
@@ -40,49 +40,18 @@ Texture::Texture(std::string path, GLint interpolation)
 		//Loads texture data into bound texture
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
-		//Modifies behaviour for bound texture
-		// Note: Only wrapping modes supported for GL_TEXTURE_RECTANGLE when defining
-		// GL_TEXTURE_WRAP are GL_CLAMP_TO_EDGE or GL_CLAMP_TO_BORDER
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interpolation);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interpolation);
 
 		// Clean up
-		textureID.unbind();
+		unbind();
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);	//Return to default alignment
 		stbi_image_free(data);
 
-		if (CheckGLErrors((std::string("Loading texture: ") + path).c_str())) {
-			throw std::runtime_error("Texture failed to load!");
-		}
 	}
 	else {
 		throw std::runtime_error("Failed to read texture data from file!");
 	}
-}
-
-bool Texture::CheckGLErrors(const char* errorLocation)
-{
-	bool error = false;
-	for (GLenum flag = glGetError(); flag != GL_NO_ERROR; flag = glGetError())
-	{
-		std::cout << errorLocation;
-		switch (flag) {
-		case GL_INVALID_ENUM:
-			std::cout << "GL_INVALID_ENUM" << std::endl; break;
-		case GL_INVALID_VALUE:
-			std::cout << "GL_INVALID_VALUE" << std::endl; break;
-		case GL_INVALID_OPERATION:
-			std::cout << "GL_INVALID_OPERATION" << std::endl; break;
-		case GL_INVALID_FRAMEBUFFER_OPERATION:
-			std::cout << "GL_INVALID_FRAMEBUFFER_OPERATION" << std::endl; break;
-		case GL_OUT_OF_MEMORY:
-			std::cout << "GL_OUT_OF_MEMORY" << std::endl; break;
-		default:
-			std::cout << "[unknown error code]" << std::endl;
-		}
-		error = true;
-	}
-	return error;
 }

@@ -26,20 +26,20 @@ public:
 	// the assumption that most students will want to work with ints, not uints, in main.cpp
 	glm::ivec2 getDimensions() const { return glm::uvec2(width, height); }
 
-	void bind() { textureID.bind(); }
-	void unbind() { textureID.unbind(); }
+	void bind() { glBindTexture(GL_TEXTURE_2D, textureID); }
+	void unbind() { glBindTexture(GL_TEXTURE_2D, textureID); }
 
 private:
+	TextureHandle textureID;
+	std::string path;
+	GLint interpolation;
+
+
 	// Although uint might make more sense here, went with int under the assumption
 	// that most students will want to work with ints, not uints, in main.cpp
 	int width;
 	int height;
 
-	GLint interpolation;
 
-	std::string path;
 
-	TextureHandle textureID;
-
-	bool CheckGLErrors(const char* errorLocation);
 };

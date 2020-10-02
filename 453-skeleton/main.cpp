@@ -57,6 +57,40 @@ private:
 	ShaderProgram& shader;
 };
 
+CPU_Geometry shipGeom(float width, float height) {
+	float halfWidth = width / 2.0f;
+	float halfHeight = height / 2.0f;
+	CPU_Geometry retGeom;
+	// vertices for the spaceship quad
+	retGeom.verts.push_back(glm::vec3(-halfWidth, halfHeight, 0.f));
+	retGeom.verts.push_back(glm::vec3(-halfWidth, -halfHeight, 0.f));
+	retGeom.verts.push_back(glm::vec3(halfWidth, -halfHeight, 0.f));
+	retGeom.verts.push_back(glm::vec3(-halfWidth, halfHeight, 0.f));
+	retGeom.verts.push_back(glm::vec3(halfWidth, -halfHeight, 0.f));
+	retGeom.verts.push_back(glm::vec3(halfWidth, halfHeight, 0.f));
+
+	// For full marks (Part IV), you'll need to use the following vertex coordinates instead.
+	// Then, you'd get the correct scale/translation/rotation by passing in uniforms into
+	// the vertex shader.
+	/*
+	retGeom.verts.push_back(glm::vec3(-1.f, 1.f, 0.f));
+	retGeom.verts.push_back(glm::vec3(-1.f, -1.f, 0.f));
+	retGeom.verts.push_back(glm::vec3(1.f, -1.f, 0.f));
+	retGeom.verts.push_back(glm::vec3(-1.f, 1.f, 0.f));
+	retGeom.verts.push_back(glm::vec3(1.f, -1.f, 0.f));
+	retGeom.verts.push_back(glm::vec3(1.f, 1.f, 0.f));
+	*/
+
+	// texture coordinates
+	retGeom.texCoords.push_back(glm::vec2(0.f, 1.f));
+	retGeom.texCoords.push_back(glm::vec2(0.f, 0.f));
+	retGeom.texCoords.push_back(glm::vec2(1.f, 0.f));
+	retGeom.texCoords.push_back(glm::vec2(0.f, 1.f));
+	retGeom.texCoords.push_back(glm::vec2(1.f, 0.f));
+	retGeom.texCoords.push_back(glm::vec2(1.f, 1.f));
+	return retGeom;
+}
+
 // END EXAMPLES
 
 int main() {
@@ -79,35 +113,7 @@ int main() {
 	// But for most other cases, you'd want GL_LINEAR interpolation.
 	GameObject ship("textures/ship.png", GL_NEAREST);
 
-	float halfWidth = 0.09f;
-	float halfHeight = 0.06f;
-	// vertices for the spaceship quad
-	ship.cgeom.verts.push_back(glm::vec3(-halfWidth, halfHeight, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(-halfWidth, -halfHeight, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(halfWidth, -halfHeight, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(-halfWidth, halfHeight, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(halfWidth, -halfHeight, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(halfWidth, halfHeight, 0.f));
-
-	// For full marks (Part IV), you'll need to use the following vertex coordinates instead.
-	// Then, you'd get the correct scale/translation/rotation by passing in uniforms into
-	// the vertex shader.
-	/*
-	ship.cgeom.verts.push_back(glm::vec3(-1.f, 1.f, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(-1.f, -1.f, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(1.f, -1.f, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(-1.f, 1.f, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(1.f, -1.f, 0.f));
-	ship.cgeom.verts.push_back(glm::vec3(1.f, 1.f, 0.f));
-	*/
-
-	// texture coordinates
-	ship.cgeom.texCoords.push_back(glm::vec2(0.f, 1.f));
-	ship.cgeom.texCoords.push_back(glm::vec2(0.f, 0.f));
-	ship.cgeom.texCoords.push_back(glm::vec2(1.f, 0.f));
-	ship.cgeom.texCoords.push_back(glm::vec2(0.f, 1.f));
-	ship.cgeom.texCoords.push_back(glm::vec2(1.f, 0.f));
-	ship.cgeom.texCoords.push_back(glm::vec2(1.f, 1.f));
+	ship.cgeom = shipGeom(0.18f, 0.12f);
 
 
 	ship.ggeom.setVerts(ship.cgeom.verts);
