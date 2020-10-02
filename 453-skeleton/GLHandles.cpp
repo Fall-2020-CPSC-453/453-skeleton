@@ -145,3 +145,53 @@ GLuint VertexBufferHandle::value() const {
 	return vboID;
 }
 
+
+//------------------------------------------------------------------------------
+
+GLuint TextureHandle::lastBoundTexture = 0;
+
+TextureHandle::TextureHandle()
+	: textureID(0) // Due to OpenGL syntax, we can't initial directly here, like we want.
+{
+	glGenTextures(1, &textureID);
+}
+
+
+TextureHandle::TextureHandle(TextureHandle&& other) noexcept
+	: textureID(std::move(other.textureID))
+{
+	other.textureID = 0;
+}
+
+TextureHandle& TextureHandle::operator=(TextureHandle&& other) noexcept {
+	std::swap(textureID, other.textureID);
+	return *this;
+}
+
+
+TextureHandle::~TextureHandle() {
+	if (TextureHandle::lastBoundTexture == textureID) {
+		glBindTexture(GL_TEXTURE_2D, 0);
+		TextureHandle::lastBoundTexture = 0;
+	}
+	glDeleteTextures(1, &textureID);
+}
+
+void TextureHandle::bind() {
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	TextureHandle::lastBoundTexture = textureID;
+}
+
+void TextureHandle::unbind() {
+	glBindTexture(GL_TEXTURE_2D, 0);
+	TextureHandle::lastBoundTexture = 0;
+}
+
+TextureHandle::operator GLuint() const {
+	return textureID;
+}
+
+
+GLuint TextureHandle::value() const {
+	return textureID;
+}

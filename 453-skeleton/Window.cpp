@@ -1,6 +1,9 @@
 #include "Window.h"
 
 #include "Log.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #include <iostream>
 
@@ -77,6 +80,14 @@ Window::Window(
 	if (callbacks != nullptr) {
 		connectCallbacks();
 	}
+
+	// Standard ImGui/GLFW middleware
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window.get(), true);
+	ImGui_ImplOpenGL3_Init("#version 330 core");
 }
 
 

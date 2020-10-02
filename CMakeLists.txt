@@ -47,6 +47,8 @@ add_subdirectory(thirdparty/fmt-7.0.3)
 set(LIBRARIES ${LIBRARIES} fmt::fmt)
 include_directories(SYSTEM thirdparty/fmt-7.0.3/include)
 
+include_directories(SYSTEM thirdparty/stb-2.26)
+include_directories(SYSTEM thirdparty/imgui-1.78)
 
 find_package(OpenGL REQUIRED)
 set(LIBRARIES ${LIBRARIES} ${OPENGL_gl_LIBRARY})
@@ -89,6 +91,7 @@ endif()
 file(GLOB SOURCES
     453-skeleton/*
     thirdparty/glew-2.1.0/src/glew.c
+	thirdparty/imgui-1.78/imgui/*.cpp
 )
 set(INCLUDES ${INCLUDES} src)
 
@@ -101,6 +104,11 @@ foreach(file ${files})
 	get_filename_component(name ${file} NAME)
 	configure_file(${file} shaders/${name})
 endforeach()
+
+configure_file(textures/ship.png textures/ship.png COPYONLY)
+configure_file(textures/diamond.png textures/diamond.png COPYONLY)
+configure_file(textures/fire.png textures/fire.png COPYONLY)
+
 
 add_executable(${APP_NAME} ${SOURCES})
 target_include_directories(${APP_NAME} PRIVATE ${INCLUDES})
