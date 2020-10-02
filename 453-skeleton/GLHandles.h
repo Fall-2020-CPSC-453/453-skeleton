@@ -154,3 +154,31 @@ private:
 	GLuint vboID;
 
 };
+
+// An RAII class for managing a VertexBuffer GLuint for OpenGL.
+class TextureHandle {
+
+public:
+	TextureHandle();
+
+
+	// Disallow copying
+	TextureHandle(const TextureHandle&) = delete;
+	TextureHandle operator=(const TextureHandle&) = delete;
+
+	// Allow moving
+	TextureHandle(TextureHandle&& other) noexcept;
+	TextureHandle& operator=(TextureHandle&& other) noexcept;
+
+	// Clean up after ourselves.
+	~TextureHandle();
+
+	// Allow casting from this type into a GLuint
+	// This allows usage in situations where a function expects a GLuint
+	operator GLuint() const;
+	GLuint value() const;
+
+private:
+	GLuint textureID;
+
+};
