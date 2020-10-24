@@ -27,6 +27,10 @@ public:
 
 	void friend attach(ShaderProgram& sp, Shader& s);
 
+	operator GLuint() const {
+		return programID;
+	}
+
 private:
 	ShaderProgramHandle programID;
 
