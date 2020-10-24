@@ -22,21 +22,19 @@
 #include "glm/gtc/type_ptr.hpp"
 
 
-using ControlPoints = std::list<glm::vec3>;
 using ParametricCurve = std::function<glm::vec3(float, std::vector<glm::vec3> const&)>;
 
-CPU_Geometry controlPointGeometry(ControlPoints const &cp, glm::vec3 color) {
+CPU_Geometry controlPointGeometry(std::vector<glm::vec3> const &cp, glm::vec3 color) {
 	CPU_Geometry retVal;
-	retVal.verts.resize(cp.size());
+	retVal.verts = cp;
 	retVal.cols.resize(cp.size(), color);
-	std::copy(cp.begin(), cp.end(), retVal.verts.begin());
 	return retVal;
 }
 
-ControlPoints::iterator findClosest(ControlPoints &cp, glm::vec3 searchPoint) {
-	ControlPoints::iterator retVal = cp.begin();
+std::vector<glm::vec3>::iterator findClosest(std::vector<glm::vec3> &cp, glm::vec3 searchPoint) {
+	std::vector<glm::vec3>::iterator retVal = cp.begin();
 	float dist = std::numeric_limits<float>::max();
-	for (ControlPoints::iterator cur = cp.begin(); cur != cp.end(); ++cur) {
+	for (std::vector<glm::vec3>::iterator cur = cp.begin(); cur != cp.end(); ++cur) {
 		float newDist = glm::length(searchPoint - (*cur));
 		if (newDist < dist) {
 			retVal = cur;
@@ -139,7 +137,7 @@ class CurveEditor : public Scene {
 			CPU_Geometry retval;
 			retval.cols.resize(samples, color);
 
-			retval.verts = sampleCurve(samples, getControlPointsVec(), parametricEvaluator);
+			retval.verts = sampleCurve(samples, getControlPoints(), parametricEvaluator);
 
 			return retval;
 		}
@@ -207,19 +205,13 @@ class CurveEditor : public Scene {
 
 		}
 
-		std::vector<glm::vec3> getControlPointsVec() {
-			std::vector<glm::vec3> points(controlPoints.size());
-			std::copy(controlPoints.begin(), controlPoints.end(), points.begin());
-			return points;
-		}
-
-		ControlPoints getControlPoints() {
+		std::vector<glm::vec3> getControlPoints() {
 			return controlPoints;
 		}
 
 	private:
-		ControlPoints controlPoints;
-		ControlPoints::iterator currentPoint;
+		std::vector<glm::vec3> controlPoints;
+		std::vector<glm::vec3>::iterator currentPoint;
 		ButtonState leftButton;
 		ButtonState rightButton;
 
@@ -243,7 +235,7 @@ class CurveEditor : public Scene {
 
 class SurfaceOfRevolution : public Scene {
 	public:
-		SurfaceOfRevolution(ControlPoints const &cp, ParametricCurve c)
+		SurfaceOfRevolution(std::vector<glm::vec3> const &cp, ParametricCurve c)
 			: controlPoints(cp)
 			, surfaceGeom()
 			, shader("shaders/test.vert", "shaders/test.frag")
@@ -353,7 +345,7 @@ class SurfaceOfRevolution : public Scene {
 		}
 
 	private:
-		ControlPoints controlPoints;
+		std::vector<glm::vec3> controlPoints;
 		GPU_Geometry surfaceGeom;
 		GPU_Geometry surfaceWireGeometry;
 		ShaderProgram shader;
