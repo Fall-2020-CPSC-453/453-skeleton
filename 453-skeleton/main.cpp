@@ -28,7 +28,7 @@ using ParametricCurve = std::function<glm::vec3(float, std::vector<glm::vec3> co
 CPU_Geometry controlPointGeometry(ControlPoints const &cp, glm::vec3 color) {
 	CPU_Geometry retVal;
 	retVal.verts.resize(cp.size());
-	retVal.colors.resize(cp.size(), color);
+	retVal.cols.resize(cp.size(), color);
 	std::copy(cp.begin(), cp.end(), retVal.verts.begin());
 	return retVal;
 }
@@ -102,7 +102,7 @@ class Scene {
 void updateGPUGeometry(GPU_Geometry &gpuGeom, CPU_Geometry const &cpuGeom) {
 	gpuGeom.bind();
 	gpuGeom.setVerts(cpuGeom.verts);
-	gpuGeom.setColors(cpuGeom.colors);
+	gpuGeom.setCols(cpuGeom.cols);
 }
 
 enum class ButtonState {
@@ -137,7 +137,7 @@ class CurveEditor : public Scene {
 
 		CPU_Geometry generateCurveGeometry(size_t samples, glm::vec3 color) {
 			CPU_Geometry retval;
-			retval.colors.resize(samples, color);
+			retval.cols.resize(samples, color);
 
 			retval.verts = sampleCurve(samples, getControlPointsVec(), parametricEvaluator);
 
@@ -309,7 +309,7 @@ class SurfaceOfRevolution : public Scene {
 				previousVerts = rotatedVerts;
 			}
 			numVertices = retval.verts.size();
-			retval.colors.resize(numVertices, color);
+			retval.cols.resize(numVertices, color);
 			return retval;
 		}
 

@@ -18,7 +18,7 @@
 // List of vertices and texture coordinates using std::vector and glm::vec3
 struct CPU_Geometry {
 	std::vector<glm::vec3> verts;
-	std::vector<glm::vec3> colors;
+	std::vector<glm::vec3> cols;
 };
 
 
@@ -32,7 +32,7 @@ public:
 	void bind() { vao.bind(); }
 
 	void setVerts(const std::vector<glm::vec3>& verts);
-	void setColors(const std::vector<glm::vec3>& colors);
+	void setCols(const std::vector<glm::vec3>& cols);
 
 private:
 	// note: due to how OpenGL works, vao needs to be

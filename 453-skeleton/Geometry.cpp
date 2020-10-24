@@ -15,6 +15,6 @@ void GPU_Geometry::setVerts(const std::vector<glm::vec3>& verts) {
 }
 
 
-void GPU_Geometry::setColors(const std::vector<glm::vec3>& colors) {
-	colorsBuffer.uploadData(sizeof(glm::vec3) * colors.size(), colors.data(), GL_STATIC_DRAW);
+void GPU_Geometry::setCols(const std::vector<glm::vec3>& cols) {
+	colorsBuffer.uploadData(sizeof(glm::vec3) * cols.size(), cols.data(), GL_STATIC_DRAW);
 }
