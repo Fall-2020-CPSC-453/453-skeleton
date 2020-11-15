@@ -3,6 +3,7 @@ layout (location = 0) in vec3 pos;
 layout (location = 1) in vec3 color;
 layout (location = 2) in vec3 normal;
 
+uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
 
@@ -14,5 +15,5 @@ void main() {
 	fragPos = pos;
 	fragColor = color;
 	n = normal;
-	gl_Position = P * V * vec4(pos, 1.0);
+	gl_Position = P * V * M * vec4(pos, 1.0);
 }

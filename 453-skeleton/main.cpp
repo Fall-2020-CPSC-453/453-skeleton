@@ -66,11 +66,18 @@ public:
 		aspect = float(width)/float(height);
 	}
 
-	void doTheViewPipeline(ShaderProgram &sp) {
+	void viewPipeline(ShaderProgram &sp) {
+		glm::mat4 M = glm::mat4(1.0);
 		glm::mat4 V = camera.getView();
 		glm::mat4 P = glm::perspective(glm::radians(45.0f), aspect, 0.01f, 1000.f);
 
-		GLint uniMat = glGetUniformLocation(sp, "V");
+		GLint location = glGetUniformLocation(sp, "light");
+		glm::vec3 light = camera.getPos();
+		glUniform3fv(location, 1, glm::value_ptr(light));
+
+		GLint uniMat = glGetUniformLocation(sp, "M");
+		glUniformMatrix4fv(uniMat, 1, GL_FALSE, glm::value_ptr(M));
+		uniMat = glGetUniformLocation(sp, "V");
 		glUniformMatrix4fv(uniMat, 1, GL_FALSE, glm::value_ptr(V));
 		uniMat = glGetUniformLocation(sp, "P");
 		glUniformMatrix4fv(uniMat, 1, GL_FALSE, glm::value_ptr(P));
@@ -246,8 +253,6 @@ int main() {
 	GPU_Geometry quads;
 	updateGPUGeometry(quads, square);
 
-	GLint location = glGetUniformLocation(shader, "light");
-
 	// RENDER LOOP
 	while (!window.shouldClose()) {
 		glfwPollEvents();
@@ -263,10 +268,7 @@ int main() {
 
 		shader.use();
 
-		a4->doTheViewPipeline(shader);
-
-		glm::vec3 light = a4->camera.getPos();
-		glUniform3fv(location, 1, glm::value_ptr(light));
+		a4->viewPipeline(shader);
 
 		quads.bind();
 		glDrawArrays(GL_TRIANGLES, 0, GLsizei(square.verts.size()));
