@@ -14,7 +14,7 @@ struct FragmentShadingParameters {
 	float pointSpecular; // The specular factor of the object
 
 	// Information about the camera and light.
-	glm::vec3 eyePosition; // the position of the camera in the scene
+	glm::vec3 rayOrigin;
 	glm::vec3 lightPosition; // The position of the light
 
 

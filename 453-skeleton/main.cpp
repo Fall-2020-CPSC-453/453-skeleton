@@ -18,6 +18,7 @@
 #include "imagebuffer.h"
 #include "RayTrace.h"
 #include "Scene.h"
+#include "Lighting.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
@@ -53,43 +54,41 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 }
 
 glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int source_id) {
-	vec3 color;
 	Intersection result = getClosestIntersection(scene, ray, source_id); //find intersection
-	if(result.num == 0)return scene.ambient* result.color;	//no intersection, dark color
+
+	FragmentShadingParameters params;
+	params.point = result.near;
+	params.pointNormal = result.normal;
+	params.pointColor = result.color;
+	params.pointSpecular = result.spec;
+	params.rayOrigin = ray.p;
+	params.lightPosition = scene.light;
+	params.sceneAmbient = scene.ambient;
+	params.sceneDiffuse = scene.diffuse;
+	params.reflectionStrength = result.reflection;
+	params.inShadow = false;
+
+	if(result.num == 0) return glm::vec3(0, 0, 0); // black;
+
+	if (level < 1) {
+		params.reflectionStrength = 0;
+	}
 
 	if(-1!=hasIntersection(scene, Ray(result.near, scene.light-result.near), result.id)){//in shadow
-		color = scene.ambient* result.color;
-	}
-	else{
-		float tmp_diffuse = std::max(0.0f, dot_normalized(result.normal, scene.light-result.near));//*diffuse;
-		if(result.reflection == 0 || level < 1){
-			if(result.spec!=0){
-				return 0.7f*(scene.ambient + scene.diffuse * tmp_diffuse)* result.color + 0.3f*std::pow(dot_normalized(scene.light-result.near-ray.d, result.normal),result.spec) ;
-			}
-			else{
-				return (scene.ambient + scene.diffuse * tmp_diffuse)* result.color;
-			}
-		}
-		else{
-			vec3 x;
-			float s;
-			s = dot_normalized(-ray.d, result.normal) * glm::length(ray.p - result.near);
-			vec3 a = s*glm::normalize(result.normal);
-			x = 2.f*a + result.near - ray.p;
-			Ray r = Ray(result.near, x);
-
-			if(result.spec!=0){
-				color = (scene.ambient + scene.diffuse * tmp_diffuse)* result.color + std::pow(dot_normalized(scene.light-result.near-ray.d, result.normal),result.spec) ;
-			}
-			else{
-				color = (scene.ambient + scene.diffuse * tmp_diffuse)* result.color;
-			}
-			//color = (ambient + diffuse * tmp_diffuse)* result.color + std::pow(dot_normalized(scene.light-result.near-ray.d, result.normal),result.spec) ;
-			color = (1-result.reflection) * color + result.reflection * raytraceSingleRay(scene, r, level-1, result.id);
-		}
+		params.inShadow = true;
 	}
 
-	return color;
+	if (params.reflectionStrength > 0) {
+		vec3 x;
+		float s;
+		s = dot_normalized(-ray.d, result.normal) * glm::length(ray.p - result.near);
+		vec3 a = s*glm::normalize(result.normal);
+		x = 2.f*a + result.near - ray.p;
+		Ray r = Ray(result.near, x);
+		params.reflectedColor = raytraceSingleRay(scene, r, level-1, result.id);
+	}
+
+	return phongShading(params);
 }
 
 struct RayAndPixel {
@@ -137,7 +136,7 @@ void raytraceImage(Scene const &scene, ImageBuffer &image, glm::vec3 viewPoint) 
 	//
 	// Note, if you do this, you will need to be careful about how you render
 	// things below too
-	std::for_each(std::begin(rays), std::end(rays), [&] (auto const &r) {
+	std::for_each(std::execution::par, std::begin(rays), std::end(rays), [&] (auto const &r) {
 		glm::vec3 color = raytraceSingleRay(scene, r.ray, 5, -1);
 		image.SetPixel(r.x, r.y, color);
 	});

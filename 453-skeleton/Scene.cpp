@@ -267,8 +267,8 @@ Scene initScene1() {
 	std::shared_ptr<Triangles> backWall = std::make_shared<Triangles>();
 
 	scene1.light = vec3(0,2.5,-7.75);
-	scene1.ambient = 0.5;
-	scene1.diffuse = 0.5;
+	scene1.ambient = 0.1;
+	scene1.diffuse = 0.4;
 	scene1.light_color = vec3(1,1,1);
 
 	sphere1->spec = 64;
@@ -318,8 +318,8 @@ Scene initScene2() {
 			vec3(0,0,-12), vec3(0,0,1), vec3(0,0.6,0.6), 0,7);
 
 	scene2.light = vec3(4,6,-1);
-	scene2.ambient = 0.5;
-	scene2.diffuse = 0.5;
+	scene2.ambient = 0.1;
+	scene2.diffuse = 0.4;
 	scene2.light_color = vec3(1,1,1);
 
 	Icosahedron->initTriangles(20,icosahedron, vec3(1,0,0), 0.5, 1);
@@ -387,8 +387,8 @@ Scene initScene3() {
 			vec3( -0.5, -0.75, -4.5), 0.25, vec3(0.4,0.6,0.8), 0, 6);
 
 	scene3.light = vec3(4,6,-1);
-	scene3.ambient = 0.5;
-	scene3.diffuse = 0.5;
+	scene3.ambient = 0.1;
+	scene3.diffuse = 0.4;
 	scene3.light_color = vec3(1,1,1);
 
 	scene3.shapesInScene.push_back(Floor3);
