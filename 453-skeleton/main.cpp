@@ -149,7 +149,7 @@ class Assignment5 : public CallbackInterface {
 public:
 	Assignment5() {
 		viewPoint = glm::vec3(0, 0, 0);
-		scene = initScene2();
+		scene = initScene1();
 		raytraceImage(scene, outputImage, viewPoint);
 	}
 
@@ -165,11 +165,6 @@ public:
 
 		if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
 			scene = initScene2();
-			raytraceImage(scene, outputImage, viewPoint);
-		}
-
-		if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
-			scene = initScene3();
 			raytraceImage(scene, outputImage, viewPoint);
 		}
 	}

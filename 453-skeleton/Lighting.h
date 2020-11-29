@@ -33,7 +33,7 @@ struct PhongReflection {
 	glm::vec3 n() const { return glm::normalize(intersection.normal); } // normal
 	glm::vec3 p() const { return intersection.point; } // point
 	glm::vec3 v() const { return glm::normalize(ray.origin - p()); } // view direction
-	glm::vec3 r() const { return glm::reflect(l(), n()); } // reflected light vector
+	glm::vec3 r() const { return -glm::reflect(l(), n()); } // reflected light vector
 
 	glm::vec3 La() const { return scene.lightColor; } // Light ambient
 	glm::vec3 Ld() const { return scene.lightColor; } // Light diffuse

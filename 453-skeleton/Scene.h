@@ -20,5 +20,4 @@ struct Scene {
 
 Scene initScene1();
 Scene initScene2();
-Scene initScene3();
 
