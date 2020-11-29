@@ -22,6 +22,24 @@ Sphere::Sphere(vec3 c, float r, int ID){
 //------------------------------------------------------------------------------
 Intersection Sphere::getIntersection(Ray ray){
 	Intersection i{};
+	i.id = id;
+	i.material = material;
+
+	// You are required to implement this intersection.
+	//
+	// NOTE: You _must_ set these values appropriately for each case:
+	//
+	// No Intersection:
+	// i.numberOfIntersections = 0;
+	//
+	// Intersection:
+	// i.normal = **the normal at the point of intersection **
+	// i.point = **the point of intersection**
+	// i.numberOfIntersections = 1; // for a single intersection
+	//
+	// If you get fancy and implement things like refraction, you may actually
+	// want to track more than one intersection. You'll need to change
+	// The intersection struct in that case.
 
 	// From https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
 	auto solveQuadratic = [](const float &a, const float &b, const float &c, float &x0, float &x1) {
@@ -62,11 +80,9 @@ Intersection Sphere::getIntersection(Ray ray){
 
 	float t = t0;
 
-	i.point = ray.origin + glm::normalize(ray.direction)*t;
 	i.normal = glm::normalize(i.point - centre);
-	i.id = id;
+	i.point = ray.origin + glm::normalize(ray.direction)*t;
 	i.numberOfIntersections = 1;
-	i.material = material;
 	return i;
 }
 
