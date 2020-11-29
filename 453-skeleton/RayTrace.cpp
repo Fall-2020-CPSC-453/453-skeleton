@@ -8,12 +8,10 @@
 using namespace std;
 using namespace glm;
 
-Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
+Sphere::Sphere(vec3 c, float r, int ID){
 	centre = c;
 	radius = r;
 	id = ID;
-	material.diffuse = cl;
-	material.reflectionStrength = glm::vec3(rf);
 }
 
 //------------------------------------------------------------------------------
@@ -72,12 +70,10 @@ Intersection Sphere::getIntersection(Ray ray){
 	return i;
 }
 
-Plane::Plane(vec3 p, vec3 n, vec3 cl, float rf, int ID){
+Plane::Plane(vec3 p, vec3 n, int ID){
 	point = p;
 	normal = n;
 	id = ID;
-	material.diffuse = cl;
-	material.reflectionStrength = glm::vec3(rf);
 }
 
 
@@ -89,10 +85,7 @@ void debug(char* str, vec3 a){
 	cout << "debug:" << str << ": " << a.x <<", " << a.y <<", " << a.z << endl;
 }
 // --------------------------------------------------------------------------
-void Triangles::initTriangles(int num, vec3 * t, vec3 cl, float rf, int ID){
-	material.diffuse = cl;
-	material.reflectionStrength = glm::vec3(rf);
-
+void Triangles::initTriangles(int num, vec3 * t, int ID){
 	id = ID;
 	for(int i = 0; i< num; i++){
 		triangles.push_back(Triangle(*t, *(t+1), *(t+2)));

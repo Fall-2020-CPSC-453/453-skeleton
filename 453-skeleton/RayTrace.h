@@ -43,12 +43,11 @@ struct Intersection{
 
 	ObjectMaterial material;
 
-	Intersection(int no, vec3 n, vec3 f, vec3 nor, vec3 cl, int ID){
+	Intersection(int no, vec3 n, vec3 f, vec3 nor, int ID){
 		num = no;
 		point = n;
 		normal = nor;
 		id = ID;
-		material.diffuse = cl;
 	}
 	Intersection(): num(0), point(0,0,0), normal(0,0,0), id(-1), material()
 	{}
@@ -84,14 +83,14 @@ public:
 	vector<Triangle> triangles;
 	Intersection getIntersection(Ray ray);
 	Intersection intersectTriangle(Ray ray, Triangle t);
-	void initTriangles(int num, vec3* t, vec3 cl, float rf, int ID);
+	void initTriangles(int num, vec3* t, int ID);
 };
 
 class Sphere: public Shape{
 public:
 	vec3 centre;
 	float radius;
-	Sphere(vec3 c, float r, vec3 cl, float rf, int ID);
+	Sphere(vec3 c, float r, int ID);
 	Intersection getIntersection(Ray ray);
 };
 
@@ -99,7 +98,7 @@ class Plane: public Shape{
 public:
 	vec3 point;
 	vec3 normal;
-	Plane(vec3 p, vec3 n, vec3 cl, float rf, int ID);
+	Plane(vec3 p, vec3 n, int ID);
 	Intersection getIntersection(Ray ray);
 };
 
