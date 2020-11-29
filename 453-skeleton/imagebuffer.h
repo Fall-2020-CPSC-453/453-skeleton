@@ -17,7 +17,8 @@
 #include <glm/vec3.hpp>
 
 #ifndef GLFW_VERSION_MAJOR
-#define GLFW_INCLUDE_GLCOREARB
+#include <GL/glew.h>
+//#define GLFW_INCLUDE_GLCOREARB
 #define GL_GLEXT_PROTOTYPES
 #include <GLFW/glfw3.h>
 #endif
