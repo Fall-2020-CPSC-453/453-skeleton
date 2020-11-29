@@ -22,7 +22,7 @@ struct PhongReflection {
 	Scene scene;
 
 	// This must be set when an point has no path to the light
-	bool inShadow; // Set this when the pixel is in shadow
+	bool inShadow = false; // Set this when the pixel is in shadow
 
 	// These parameters must be set for objects that show reflections
 	glm::vec3 reflectedColor; // The reflectedColor
@@ -83,11 +83,10 @@ struct PhongReflection {
 		return Id() + Is() + Ia();
 	}
 
-	// Put it all together into a phong reflection equation
+	// Add in reflection
 	glm::vec3 I_withReflection() const {
-		//return Id();
-		auto r = material.reflectionStrength;
-		return (1.0f-r) * I() + r*reflectedColor;
+		// TODO: You will need to implement this for part 4
+		return I();
 	}
 
 };

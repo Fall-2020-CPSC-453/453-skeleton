@@ -68,17 +68,12 @@ glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int s
 	phong.ray = ray;
 	phong.scene = scene;
 	phong.material = result.material;
-	phong.inShadow = false;
 	phong.intersection = result;
 
 	if(result.numberOfIntersections == 0) return glm::vec3(0, 0, 0); // black;
 
 	if (level < 1) {
 		phong.material.reflectionStrength = glm::vec3(0);
-	}
-
-	if(-1!=hasIntersection(scene, Ray(result.point, phong.l()), result.id)){//in shadow
-		phong.inShadow = true;
 	}
 
 	if (!glm::isNull(phong.material.reflectionStrength, 0.00001f)) {
@@ -103,14 +98,14 @@ std::vector<RayAndPixel> getRaysForViewpoint(Scene const &scene, ImageBuffer &im
 	// and angles to produce a perspective image.
 	int x = 0;
 	int y = 0;
-	float fov = M_PI / 7.f;
-	float z = -1.f / tan(fov);
 	std::vector<RayAndPixel> rays;
 
 	for (float i = -1; x < image.Width(); x++) {
 		y = 0;
 		for (float j = -1; y < image.Height(); y++) {
-			Ray r = Ray(viewPoint, vec3(i-viewPoint.x, j-viewPoint.y, z-viewPoint.z));
+			glm::vec3 direction(0, 0, -1);
+			glm::vec3 viewPointOrthographic(i-viewPoint.x, j-viewPoint.y, 0);
+			Ray r = Ray(viewPointOrthographic, direction);
 			rays.push_back({r, x, y});
 			j += 2.f / image.Height();
 		}
