@@ -6,21 +6,9 @@
 #include <glm/glm.hpp>
 
 #include "Scene.h"
+#include "Material.h"
 
-// This object represents the "material" that is covering an object.
-// Like its colour, reflection parameter and its specular parameters
-struct ObjectMaterial {
-	glm::vec3 color;
-	float reflectionStrength = 0;
-	float specularCoefficient = 0;
-	glm::vec3 specular;
-	glm::vec3 diffuse;
-	float ambient;
-
-	ObjectMaterial() : color(0, 0, 0) {}
-};
-
-struct FragmentShadingParameters {
+struct PhongReflection {
 	// Information about the point we're shading
 	Intersection intersection;
 
@@ -41,27 +29,73 @@ struct FragmentShadingParameters {
 
 
 	// Helper methods to name things the same as lecture
-	glm::vec3 l() const { return intersection.lightPosition - p; }
-	glm::vec3 n() const { return intersection.normal; }
-	glm::vec3 p() const { return intersection.near; }
-	glm::vec3 Ld() const { return scene.lightColor; }
-	glm::vec3 Ls() const { return scene.lightColor; }
-	glm::vec3 La() const { return scene.lightColor; }
-	glm::vec3 Kd() const { return material.diffuse; }
-	glm::vec3 Ks() const { return material.specular; }
-	float Ka() const { return material.ambient; }
+	glm::vec3 l() const { return glm::normalize(scene.lightPosition - p()); } // light vector
+	glm::vec3 n() const { return glm::normalize(intersection.normal); } // normal
+	glm::vec3 p() const { return intersection.point; } // point
+	glm::vec3 v() const { return glm::normalize(ray.origin - p()); } // view direction
+	glm::vec3 r() const { return glm::reflect(l(), n()); } // reflected light vector
+
+	glm::vec3 La() const { return scene.lightColor; } // Light ambient
+	glm::vec3 Ld() const { return scene.lightColor; } // Light diffuse
+	glm::vec3 Ls() const { return scene.lightColor; } // Light specular
+
+	glm::vec3 Ka() const { return material.ambient; } // Material ambient
+	glm::vec3 Kd() const { return material.diffuse; } // Material diffuse
+	glm::vec3 Ks() const { return material.specular; } // Material specular
+
 	float alpha() const { return material.specularCoefficient; }
+
+	// Calculate the ambient factor.
+	glm::vec3 Ia() const {
+		// Just like in lecture.
+		// NOTE: the following is component wise multiplication, NOT the dot product.
+		return Ka()*La();
+	}
+
+
+	// Calculate the diffuse factor.
+	glm::vec3 Id() const {
+		// Calculate cos(theta)
+		float l_dot_n = glm::dot(l(), n());
+		// Ensure we don't get negative numbers
+		l_dot_n = std::max(0.0f, l_dot_n);
+		// combine it just like in lecture
+		// NOTE: the following is component wise multiplication, NOT the dot product.
+		return Kd() * l_dot_n * Ld();
+	}
+
+	// Calculate the specular factor.
+	glm::vec3 Is() const {
+		auto r_dot_v = glm::dot(r(), v());
+		// Ensure we don't get negative numbers
+		r_dot_v = std::max(0.0f, r_dot_v);
+		r_dot_v = std::pow(r_dot_v, alpha());
+
+		// NOTE: the following is component wise multiplication, NOT the dot product.
+		return Ks() * Ls() * r_dot_v;
+	}
+
+	// Put it all together into a phong reflection equation
+	glm::vec3 I() const {
+		if (inShadow) {
+			return Ia();
+		}
+		return Id() + Is() + Ia();
+	}
+
+	// Put it all together into a phong reflection equation
+	glm::vec3 I_withReflection() const {
+		//return p();
+		//float l_dot_n = glm::dot(l(), n());
+		// Ensure we don't get negative numbers
+		//l_dot_n = std::max(0.0f, l_dot_n);
+		//return glm::vec3(l_dot_n);
+		//return Kd();
+		//return Id();
+		//return I();
+		auto r = material.reflectionStrength;
+		return (1.0f-r) * I() + r*reflectedColor;
+	}
 
 };
 
-// Calculate the ambient factor.
-glm::vec3 ambient(FragmentShadingParameters params);
-
-// Calculate the diffuse factor.
-glm::vec3 diffuse(FragmentShadingParameters params);
-
-// Calculate the specular factor.
-float specular(FragmentShadingParameters params);
-
-// Put it all together into a phone shaded equation
-glm::vec3 phongShading(FragmentShadingParameters params);

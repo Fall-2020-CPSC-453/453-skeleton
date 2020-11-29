@@ -390,7 +390,7 @@ Scene initScene3() {
 	backWall3->material.specularCoefficient = 8;
 	scene3.shapesInScene.push_back(backWall3);
 
-	leftWall3->material.reflectionStrength = 0.2;
+	leftWall3->material.reflectionStrength = glm::vec3(0.2);
 	scene3.shapesInScene.push_back(leftWall3);
 
 	sphere5->material.specularCoefficient = 16;

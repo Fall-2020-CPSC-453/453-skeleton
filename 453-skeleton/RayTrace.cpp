@@ -12,8 +12,8 @@ Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
 	centre = c;
 	radius = r;
 	id = ID;
-	material.color = cl;
-	material.reflectionStrength = rf;
+	material.diffuse = cl;
+	material.reflectionStrength = glm::vec3(rf);
 }
 
 //------------------------------------------------------------------------------
@@ -64,8 +64,8 @@ Intersection Sphere::getIntersection(Ray ray){
 
 	float t = t0;
 
-	i.near = ray.origin + glm::normalize(ray.direction)*t;
-	i.normal = glm::normalize(i.near - centre);
+	i.point = ray.origin + glm::normalize(ray.direction)*t;
+	i.normal = glm::normalize(i.point - centre);
 	i.id = id;
 	i.num = 1;
 	i.material = material;
@@ -76,8 +76,8 @@ Plane::Plane(vec3 p, vec3 n, vec3 cl, float rf, int ID){
 	point = p;
 	normal = n;
 	id = ID;
-	material.color = cl;
-	material.reflectionStrength = rf;
+	material.diffuse = cl;
+	material.reflectionStrength = glm::vec3(rf);
 }
 
 
@@ -90,8 +90,8 @@ void debug(char* str, vec3 a){
 }
 // --------------------------------------------------------------------------
 void Triangles::initTriangles(int num, vec3 * t, vec3 cl, float rf, int ID){
-	material.color = cl;
-	material.reflectionStrength =rf;
+	material.diffuse = cl;
+	material.reflectionStrength = glm::vec3(rf);
 
 	id = ID;
 	for(int i = 0; i< num; i++){
@@ -132,7 +132,7 @@ Intersection Triangles::intersectTriangle(Ray ray, Triangle triangle){
 	// ray intersection
 	if (t > EPSILON) {
 		Intersection p;
-		p.near = ray.origin + ray.direction * t;
+		p.point = ray.origin + ray.direction * t;
 		p.normal = glm::normalize(glm::cross(edge1, edge2));
 		p.material = material;
 		p.num = 1;
@@ -151,11 +151,11 @@ Intersection Triangles::getIntersection(Ray ray){
 	result.id = id;
 	float min = 9999;
 	result = intersectTriangle(ray, triangles.at(0));
-	if(result.num!=0)min = glm::distance(result.near, ray.origin);
+	if(result.num!=0)min = glm::distance(result.point, ray.origin);
 	for(int i = 1; i<triangles.size() ;i++){
 		Intersection p = intersectTriangle(ray, triangles.at(i));
-		if(p.num !=0 && glm::distance(p.near, ray.origin) < min){
-			min = glm::distance(p.near, ray.origin);
+		if(p.num !=0 && glm::distance(p.point, ray.origin) < min){
+			min = glm::distance(p.point, ray.origin);
 			result = p;
 		}
 	}
@@ -174,7 +174,7 @@ Intersection Plane::getIntersection(Ray ray){
 	float s = dot(point - ray.origin, normal)/dot(ray.direction, normal);
 	//if(s<0.00001)return result;
 	result.num = 1;
-	result.near = ray.origin + s*ray.direction;
+	result.point = ray.origin + s*ray.direction;
 	return result;
 }
 
