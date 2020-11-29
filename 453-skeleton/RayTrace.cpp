@@ -16,23 +16,6 @@ Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
 	material.reflectionStrength = rf;
 }
 
-bool solveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1)
-{
-	float discr = b * b - 4 * a * c;
-	if (discr < 0) return false;
-	else if (discr == 0) x0 = x1 = - 0.5 * b / a;
-	else {
-		float q = (b > 0) ?
-			-0.5 * (b + sqrt(discr)) :
-			-0.5 * (b - sqrt(discr));
-		x0 = q / a;
-		x1 = c / q;
-	}
-	if (x0 > x1) std::swap(x0, x1);
-
-	return true;
-}
-
 //------------------------------------------------------------------------------
 // This is part 2 of your assignment. At the moment, the spheres are not showing
 // up. Implement this method to make them show up.
@@ -43,6 +26,21 @@ Intersection Sphere::getIntersection(Ray ray){
 	Intersection i{};
 
 	// From https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+	auto solveQuadratic = [](const float &a, const float &b, const float &c, float &x0, float &x1) {
+		float discr = b * b - 4 * a * c;
+		if (discr < 0) return false;
+		else if (discr == 0) x0 = x1 = - 0.5 * b / a;
+		else {
+			float q = (b > 0) ?
+				-0.5 * (b + sqrt(discr)) :
+				-0.5 * (b - sqrt(discr));
+			x0 = q / a;
+			x1 = c / q;
+		}
+		if (x0 > x1) std::swap(x0, x1);
+
+		return true;
+	};
 	float t0, t1;
 	// analytic solution
 	glm::vec3 L = ray.origin - centre;
