@@ -80,8 +80,8 @@ Intersection Sphere::getIntersection(Ray ray){
 
 	float t = t0;
 
-	i.normal = glm::normalize(i.point - centre);
 	i.point = ray.origin + glm::normalize(ray.direction)*t;
+	i.normal = glm::normalize(i.point - centre);
 	i.numberOfIntersections = 1;
 	return i;
 }
