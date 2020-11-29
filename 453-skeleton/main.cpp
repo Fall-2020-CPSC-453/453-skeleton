@@ -53,6 +53,17 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 	return closestIntersection;
 }
 
+Ray reflectRay(Ray const &r, glm::vec3 p, glm::vec3 normal) {
+	// From: http://paulbourke.net/geometry/reflected/
+	// Rr = Ri - 2 N (Ri . N)
+	auto N = glm::normalize(normal);
+	auto Ri = glm::normalize(r.direction);
+	float s = glm::dot(Ri, N);
+	auto Rr = Ri - 2.f * N * s;
+
+	return Ray(p, Rr);
+}
+
 glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int source_id) {
 	Intersection result = getClosestIntersection(scene, ray, source_id); //find intersection
 
@@ -79,13 +90,8 @@ glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int s
 	}
 
 	if (params.material.reflectionStrength > 0) {
-		vec3 x;
-		float s;
-		s = dot_normalized(-ray.direction, result.normal) * glm::length(ray.origin - result.near);
-		vec3 a = s*glm::normalize(result.normal);
-		x = 2.f*a + result.near - ray.origin;
-		Ray r = Ray(result.near, x);
-		params.reflectedColor = raytraceSingleRay(scene, r, level-1, result.id);
+		Ray reflection = reflectRay(ray, result.near, result.normal);
+		params.reflectedColor = raytraceSingleRay(scene, reflection, level-1, result.id);
 	}
 
 	return phongShading(params);
@@ -139,7 +145,7 @@ void raytraceImage(Scene const &scene, ImageBuffer &image, glm::vec3 viewPoint) 
 	// Note, if you do this, you will need to be careful about how you render
 	// things below too
 	std::for_each(std::execution::par, std::begin(rays), std::end(rays), [&] (auto const &r) {
-		glm::vec3 color = raytraceSingleRay(scene, r.ray, 5, -1);
+		glm::vec3 color = raytraceSingleRay(scene, r.ray, 6, -1);
 		image.SetPixel(r.x, r.y, color);
 	});
 }

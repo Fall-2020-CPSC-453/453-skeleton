@@ -26,6 +26,7 @@ void debug(char* str, vec3 a);
 struct Ray {
 	vec3 origin;
 	vec3 direction;
+
 	Ray(vec3 point, vec3 dir){
 		origin = point;
 		direction = dir;

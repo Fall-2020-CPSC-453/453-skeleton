@@ -5,6 +5,8 @@
 
 #include <glm/glm.hpp>
 
+// This object represents the "material" that is covering an object.
+// Like its colour, reflection parameter and its specular parameters
 struct ObjectMaterial {
 	glm::vec3 color;
 	float reflectionStrength = 0;

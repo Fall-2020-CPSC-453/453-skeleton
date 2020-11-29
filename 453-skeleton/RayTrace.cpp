@@ -89,7 +89,7 @@ Plane::Plane(vec3 p, vec3 n, vec3 cl, float rf, int ID){
 	normal = n;
 	id = ID;
 	material.color = cl;
-	material.reflectionStrength =rf;
+	material.reflectionStrength = rf;
 }
 
 
