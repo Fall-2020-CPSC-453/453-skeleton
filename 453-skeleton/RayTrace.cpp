@@ -112,25 +112,48 @@ void Triangles::initTriangles(int num, vec3 * t, vec3 cl, float rf, int ID){
 	}
 }
 
-Intersection Triangles::intersectTriangle(Ray ray, Triangle t){
-	vec3 v = t.p2 - t.p1;
-	vec3 u = t.p3 - t.p1;
-	vec3 n = cross(v,u);
-	Intersection p;
-	if(dot(n,ray.direction) == 0){
-		return p;
+Intersection Triangles::intersectTriangle(Ray ray, Triangle triangle){
+	// From https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+	const float EPSILON = 0.0000001;
+	auto vertex0 = triangle.p1;
+	auto vertex1 = triangle.p2;
+	auto vertex2 = triangle.p3;
+
+	glm::vec3 edge1, edge2, h, s, q;
+	float a,f,u,v;
+	edge1 = vertex1 - vertex0;
+	edge2 = vertex2 - vertex0;
+	h = glm::cross(ray.direction, edge2);
+	a = glm::dot(edge1, h);
+	if (a > -EPSILON && a < EPSILON) {
+		return Intersection{}; // no intersection
 	}
-	mat3 inv = inverse(mat3(ray.direction, -u, -v));
-	vec3 tmp = t.p1 - ray.origin;
-	float a = inv[0].x * tmp.x + inv[1].x * tmp.y + inv[2].x * tmp.z;
-	float b = inv[0].y * tmp.x + inv[1].y * tmp.y + inv[2].y * tmp.z;
-	float c = inv[0].z * tmp.x + inv[1].z * tmp.y + inv[2].z * tmp.z;
-	if(b>=0 && c>=0 &&b+c<=1 && a>0){
+	f = 1.0/a;
+	s = ray.origin - vertex0;
+	u = f * glm::dot(s, h);
+	if (u < 0.0 || u > 1.0) {
+		return Intersection{}; // no intersection
+	}
+	q = glm::cross(s, edge1);
+	v = f * glm::dot(ray.direction, q);
+	if (v < 0.0 || u + v > 1.0) {
+		return Intersection{}; // no intersection
+	}
+	// At this stage we can compute t to find out where the intersection point is on the line.
+	float t = f * glm::dot(edge2, q);
+	// ray intersection
+	if (t > EPSILON) {
+		Intersection p;
+		p.near = ray.origin + ray.direction * t;
+		p.normal = glm::normalize(glm::cross(edge1, edge2));
+		p.material = material;
 		p.num = 1;
-		p.near = ray.origin + a*ray.direction;
-		p.normal = n;
+		p.id = id;
+		return p;
+	} else {
+		// This means that there is a line intersection but not a ray intersection.
+		return Intersection{}; // no intersection
 	}
-	return p;
 }
 
 

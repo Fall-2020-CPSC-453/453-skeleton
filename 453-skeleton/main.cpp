@@ -118,7 +118,7 @@ std::vector<RayAndPixel> getRaysForViewpoint(Scene const &scene, ImageBuffer &im
 	for (float i = -1; x < image.Width(); x++) {
 		y = 0;
 		for (float j = -1; y < image.Height(); y++) {
-			Ray r = Ray(viewPoint, vec3(i-viewPoint.x, j-viewPoint.y, z-viewPoint.z));
+			Ray r = Ray(viewPoint, glm::normalize(vec3(i-viewPoint.x, j-viewPoint.y, z-viewPoint.z)));
 			rays.push_back({r, x, y});
 			j += 2.f / image.Height();
 		}
@@ -145,7 +145,7 @@ void raytraceImage(Scene const &scene, ImageBuffer &image, glm::vec3 viewPoint) 
 	// Note, if you do this, you will need to be careful about how you render
 	// things below too
 	std::for_each(std::execution::par, std::begin(rays), std::end(rays), [&] (auto const &r) {
-		glm::vec3 color = raytraceSingleRay(scene, r.ray, 6, -1);
+		glm::vec3 color = raytraceSingleRay(scene, r.ray, 5, -1);
 		image.SetPixel(r.x, r.y, color);
 	});
 }
