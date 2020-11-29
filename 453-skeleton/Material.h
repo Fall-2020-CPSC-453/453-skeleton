@@ -21,3 +21,6 @@ struct ObjectMaterial {
 		, reflectionStrength(0, 0, 0)
 	{}
 };
+
+ObjectMaterial goldFromSomeRandomWebsite();
+ObjectMaterial brassFromLecture();

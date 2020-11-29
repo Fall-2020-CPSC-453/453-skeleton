@@ -85,14 +85,7 @@ struct PhongReflection {
 
 	// Put it all together into a phong reflection equation
 	glm::vec3 I_withReflection() const {
-		//return p();
-		//float l_dot_n = glm::dot(l(), n());
-		// Ensure we don't get negative numbers
-		//l_dot_n = std::max(0.0f, l_dot_n);
-		//return glm::vec3(l_dot_n);
-		//return Kd();
 		//return Id();
-		//return I();
 		auto r = material.reflectionStrength;
 		return (1.0f-r) * I() + r*reflectedColor;
 	}

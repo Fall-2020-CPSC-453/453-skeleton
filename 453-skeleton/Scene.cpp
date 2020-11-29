@@ -305,8 +305,8 @@ Scene initScene1() {
 	scene1.shapesInScene.push_back(backWall);
 
 	scene1.lightPosition = vec3(0,2.5,-7.75);
-	scene1.lightColor = vec3(1,1,1);
 
+	scene1.lightColor = vec3(1,1,1);
 	return scene1;
 }
 
