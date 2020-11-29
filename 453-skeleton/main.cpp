@@ -98,14 +98,14 @@ std::vector<RayAndPixel> getRaysForViewpoint(Scene const &scene, ImageBuffer &im
 	// and angles to produce a perspective image.
 	int x = 0;
 	int y = 0;
+	float fov = M_PI / 7.f;
+	float z = -1.f / tan(fov);
 	std::vector<RayAndPixel> rays;
 
 	for (float i = -1; x < image.Width(); x++) {
 		y = 0;
 		for (float j = -1; y < image.Height(); y++) {
-			glm::vec3 direction(0, 0, -1);
-			glm::vec3 viewPointOrthographic(i-viewPoint.x, j-viewPoint.y, 0);
-			Ray r = Ray(viewPointOrthographic, direction);
+			Ray r = Ray(viewPoint, vec3(i-viewPoint.x, j-viewPoint.y, z-viewPoint.z));
 			rays.push_back({r, x, y});
 			j += 2.f / image.Height();
 		}
