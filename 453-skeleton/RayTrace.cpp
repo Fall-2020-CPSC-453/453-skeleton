@@ -44,8 +44,9 @@ Intersection Sphere::getIntersection(Ray ray){
 	float t0, t1;
 	// analytic solution
 	glm::vec3 L = ray.origin - centre;
-	float a = glm::dot(ray.direction, ray.direction);
-	float b = 2 * glm::dot(ray.direction, L);
+	auto D = glm::normalize(ray.direction);
+	float a = glm::dot(D, D);
+	float b = 2 * glm::dot(D, L);
 	float c = glm::dot(L, L) - radius*radius;
 	if (!solveQuadratic(a, b, c, t0, t1)) {
 		return i;
@@ -150,11 +151,11 @@ Intersection Triangles::getIntersection(Ray ray){
 	result.id = id;
 	float min = 9999;
 	result = intersectTriangle(ray, triangles.at(0));
-	if(result.num!=0)min = distance(result.near, ray.origin);
+	if(result.num!=0)min = glm::distance(result.near, ray.origin);
 	for(int i = 1; i<triangles.size() ;i++){
 		Intersection p = intersectTriangle(ray, triangles.at(i));
-		if(p.num !=0 && distance(p.near, ray.origin) < min){
-			min = distance(p.near, ray.origin);
+		if(p.num !=0 && glm::distance(p.near, ray.origin) < min){
+			min = glm::distance(p.near, ray.origin);
 			result = p;
 		}
 	}

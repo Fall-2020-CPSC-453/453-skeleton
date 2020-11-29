@@ -36,43 +36,43 @@ vec3 blue_pyramid[12]{
 
 //Floor
 vec3 floor1[6]{
-  vec3(2.75, -2.75, -2),
+  vec3(2.75, -2.75, -5),
   vec3(2.75, -2.75, -10.5),
   vec3(-2.75, -2.75, -10.5),
-  vec3(-2.75, -2.75, -2),
-  vec3(2.75, -2.75, -2),
+  vec3(-2.75, -2.75, -5),
+  vec3(2.75, -2.75, -5),
   vec3(-2.75, -2.75, -10.5)
 };
 //Ceiling
 vec3 ceiling[6]{
   vec3(2.75, 2.75, -10.5),
-  vec3(2.75, 2.75, -2),
-  vec3(-2.75, 2.75, -2),
+  vec3(2.75, 2.75, -5),
+  vec3(-2.75, 2.75, -5),
 
   vec3(-2.75, 2.75, -10.5),
   vec3(2.75, 2.75, -10.5),
-  vec3(-2.75, 2.75, -2)
+  vec3(-2.75, 2.75, -5)
 };
 
 //Green wall on right
 vec3 right_wall[6]{
-  vec3(2.75, 2.75, -2),
+  vec3(2.75, 2.75, -5),
   vec3(2.75, 2.75, -10.5),
   vec3(2.75, -2.75, -10.5),
 
-  vec3(2.75, -2.75, -2),
-  vec3(2.75, 2.75, -2),
+  vec3(2.75, -2.75, -5),
+  vec3(2.75, 2.75, -5),
   vec3(2.75, -2.75, -10.5)
 };
 
 //Red wall on left
 vec3 left_wall[6]{
-  vec3(-2.75, -2.75, -2),
+  vec3(-2.75, -2.75, -5),
   vec3(-2.75, -2.75, -10.5),
   vec3(-2.75, 2.75, -10.5),
 
-  vec3(-2.75, 2.75, -2),
-  vec3(-2.75, -2.75, -2),
+  vec3(-2.75, 2.75, -5),
+  vec3(-2.75, -2.75, -5),
   vec3(-2.75, 2.75, -10.5)
 };
 
@@ -256,7 +256,7 @@ Scene initScene1() {
 
 	//Reflective grey sphere
 	std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(
-		vec3( 0.9, -1.925, -6.69), 0.825, vec3(0.6,0.6,0.6), 0.5, 1
+		vec3( 0.9, -1.925, -6.69), 0.825, vec3(0.6,0.6,0.6), 0.7, 1
 	);
 	//pyramid
 	std::shared_ptr<Triangles> pyramid = std::make_shared<Triangles>();
@@ -315,11 +315,11 @@ Scene initScene2() {
 			vec3(0,-1,0), vec3(0,1,0),vec3(0.8,0.8,0.8), 0, 6);
 	//Back wall
 	std::shared_ptr<Plane> backWallTwo = std::make_shared<Plane>(
-			vec3(0,0,-12), vec3(0,0,1), vec3(0,0.6,0.6), 0,7);
+			vec3(0,0,-12), vec3(0,0,1), vec3(0,0.6,0.6), 0, 7);
 
-	scene2.light = vec3(4,6,-1);
+	scene2.light = vec3(4, 6, -1);
 	scene2.ambient = 0.1;
-	scene2.diffuse = 0.4;
+	scene2.diffuse = 0.7;
 	scene2.light_color = vec3(1,1,1);
 
 	Icosahedron->initTriangles(20,icosahedron, vec3(1,0,0), 0.5, 1);

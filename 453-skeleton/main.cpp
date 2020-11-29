@@ -31,8 +31,8 @@ int hasIntersection(Scene const &scene, Ray ray, int skipID){
 		if(
 			shape->id != skipID
 			&& tmp.num!=0
-			&& glm::length(tmp.near - ray.origin) > 0.00001
-			&& glm::length(tmp.near - ray.origin) < glm::length(ray.origin - scene.light) - 0.01
+			&& glm::distance(tmp.near, ray.origin) > 0.00001
+			&& glm::distance(tmp.near, ray.origin) < glm::distance(ray.origin, scene.light) - 0.01
 		){
 			return tmp.id;
 		}
@@ -49,7 +49,7 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 			continue;
 		}
 		Intersection p = shape->getIntersection(ray);
-		float distance = glm::length(p.near - ray.origin);
+		float distance = glm::distance(p.near, ray.origin);
 		if(p.num !=0 && distance < min){
 			min = distance;
 			closestIntersection = p;
@@ -65,7 +65,6 @@ Ray reflectRay(Ray const &r, glm::vec3 p, glm::vec3 normal) {
 	auto Ri = glm::normalize(r.direction);
 	float s = glm::dot(Ri, N);
 	auto Rr = Ri - 2.f * N * s;
-
 	return Ray(p, Rr);
 }
 
@@ -79,9 +78,7 @@ glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int s
 	params.lightPosition = scene.light;
 	params.sceneAmbient = scene.ambient;
 	params.sceneDiffuse = scene.diffuse;
-
 	params.material = result.material;
-
 	params.inShadow = false;
 
 	if(result.num == 0) return glm::vec3(0, 0, 0); // black;
@@ -123,7 +120,7 @@ std::vector<RayAndPixel> getRaysForViewpoint(Scene const &scene, ImageBuffer &im
 	for (float i = -1; x < image.Width(); x++) {
 		y = 0;
 		for (float j = -1; y < image.Height(); y++) {
-			Ray r = Ray(viewPoint, glm::normalize(vec3(i-viewPoint.x, j-viewPoint.y, z-viewPoint.z)));
+			Ray r = Ray(viewPoint, vec3(i-viewPoint.x, j-viewPoint.y, z-viewPoint.z));
 			rays.push_back({r, x, y});
 			j += 2.f / image.Height();
 		}
@@ -144,8 +141,8 @@ void raytraceImage(Scene const &scene, ImageBuffer &image, glm::vec3 viewPoint) 
 	// final color into the image at the appropriate location.
 	//
 	// I've written it this way, because if you're keen on this, you can
-	// try and parallelize this loop to ensure that your ray tracer runs as
-	// fast as possible
+	// try and parallelize this loop to ensure that your ray tracer makes use
+	// of all of your CPU cores
 	//
 	// Note, if you do this, you will need to be careful about how you render
 	// things below too

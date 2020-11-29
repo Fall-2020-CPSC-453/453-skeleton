@@ -2,6 +2,15 @@
 
 #include "RayTrace.h"
 
+
+//------------------------------------------------------------------------------
+// This is a simple version of shading that you may use for your program.
+//
+// It is not fancy, and it could be made better. You do not need to make it
+// better to get full marks. But if you are interested in ray-tracing then
+// please feel free to tinker with it.
+//------------------------------------------------------------------------------
+
 // Calculate the ambient factor.
 glm::vec3 ambient(FragmentShadingParameters params) {
 	return params.sceneAmbient * params.material.color;
