@@ -4,14 +4,22 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "RayTrace.h"
+
+struct ObjectMaterial {
+	glm::vec3 color;
+	float reflectionStrength = 0;
+	float specularStrength = 0;
+
+	ObjectMaterial() : color(0, 0, 0) {}
+};
 
 struct FragmentShadingParameters {
 	// Information about the point we're shading
 	glm::vec3 point; // The point we are shading in the scene.
 	glm::vec3 pointNormal; // The normal of the point we are shading in the scene.
-	glm::vec3 pointColor; // The color of the point we are shading
-	float pointSpecular; // The specular factor of the object
+
+	// The point's material parameters
+	ObjectMaterial material;
 
 	// Information about the camera and light.
 	glm::vec3 rayOrigin;
@@ -27,7 +35,7 @@ struct FragmentShadingParameters {
 
 
 	// These parameters must be set for objects that show reflections
-	float reflectionStrength; // The strength of the reflection
+
 	glm::vec3 reflectedColor; // The reflectedColor
 };
 

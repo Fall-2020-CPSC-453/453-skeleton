@@ -271,7 +271,7 @@ Scene initScene1() {
 	scene1.diffuse = 0.4;
 	scene1.light_color = vec3(1,1,1);
 
-	sphere1->spec = 64;
+	sphere1->material.specularStrength = 64;
 	scene1.shapesInScene.push_back(sphere1);
 
 	pyramid->initTriangles(4, blue_pyramid, vec3(0,0.85,0.95), 0.3, 2);
@@ -325,22 +325,22 @@ Scene initScene2() {
 	Icosahedron->initTriangles(20,icosahedron, vec3(1,0,0), 0.5, 1);
 	scene2.shapesInScene.push_back(Icosahedron);
 
-	sphere2->spec = 64;
+	sphere2->material.specularStrength = 64;
 	scene2.shapesInScene.push_back(sphere2);
 
-	sphere3->spec = 64;
+	sphere3->material.specularStrength = 64;
 	scene2.shapesInScene.push_back(sphere3);
 
-	sphere4->spec = 64;
+	sphere4->material.specularStrength = 64;
 	scene2.shapesInScene.push_back(sphere4);
 
 	greenCone->initTriangles(12,green_Cone, vec3(0,0.8,0), 0, 5);
-	greenCone->spec = 8;
+	greenCone->material.specularStrength = 8;
 	scene2.shapesInScene.push_back(greenCone);
 
 	scene2.shapesInScene.push_back(floorTwo);
 
-	backWallTwo->spec = 8;
+	backWallTwo->material.specularStrength = 8;
 	scene2.shapesInScene.push_back(backWallTwo);
 
 	return scene2;
@@ -393,23 +393,23 @@ Scene initScene3() {
 
 	scene3.shapesInScene.push_back(Floor3);
 
-	backWall3->spec = 8;
+	backWall3->material.specularStrength = 8;
 	scene3.shapesInScene.push_back(backWall3);
 
-	leftWall3->reflection = 0.2;
+	leftWall3->material.reflectionStrength = 0.2;
 	scene3.shapesInScene.push_back(leftWall3);
 
-	sphere5->spec = 16;
+	sphere5->material.specularStrength = 16;
 	scene3.shapesInScene.push_back(sphere5);
 
-	sphere6->spec = 8;
+	sphere6->material.specularStrength = 8;
 	scene3.shapesInScene.push_back(sphere6);
 
-	sphere7->spec = 64;
+	sphere7->material.specularStrength = 64;
 	scene3.shapesInScene.push_back(sphere7);
 
 	Diamond->initTriangles(4, diamond, vec3(0,0.85,0.95), 0.3, 7);
-	Diamond->spec = 8;
+	Diamond->material.specularStrength = 8;
 	scene3.shapesInScene.push_back(Diamond);
 	return scene3;
 }

@@ -28,7 +28,7 @@
 int hasIntersection(Scene const &scene, Ray ray, int skipID){
 	for (auto &shape : scene.shapesInScene) {
 		Intersection tmp = shape->getIntersection(ray);
-		if(shape->id != skipID && tmp.num!=0 && glm::length(tmp.near - ray.p)> 0.00001 && glm::length(tmp.near - ray.p) < glm::length(ray.p - scene.light) - 0.01){
+		if(shape->id != skipID && tmp.num!=0 && glm::length(tmp.near - ray.origin)> 0.00001 && glm::length(tmp.near - ray.origin) < glm::length(ray.origin - scene.light) - 0.01){
 			return tmp.id;
 		}
 	}
@@ -44,7 +44,7 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 			continue;
 		}
 		Intersection p = shape->getIntersection(ray);
-		float distance = glm::length(p.near - ray.p);
+		float distance = glm::length(p.near - ray.origin);
 		if(p.num !=0 && distance < min){
 			min = distance;
 			closestIntersection = p;
@@ -59,31 +59,31 @@ glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int s
 	FragmentShadingParameters params;
 	params.point = result.near;
 	params.pointNormal = result.normal;
-	params.pointColor = result.color;
-	params.pointSpecular = result.spec;
-	params.rayOrigin = ray.p;
+	params.rayOrigin = ray.origin;
 	params.lightPosition = scene.light;
 	params.sceneAmbient = scene.ambient;
 	params.sceneDiffuse = scene.diffuse;
-	params.reflectionStrength = result.reflection;
+
+	params.material = result.material;
+
 	params.inShadow = false;
 
 	if(result.num == 0) return glm::vec3(0, 0, 0); // black;
 
 	if (level < 1) {
-		params.reflectionStrength = 0;
+		params.material.reflectionStrength = 0;
 	}
 
 	if(-1!=hasIntersection(scene, Ray(result.near, scene.light-result.near), result.id)){//in shadow
 		params.inShadow = true;
 	}
 
-	if (params.reflectionStrength > 0) {
+	if (params.material.reflectionStrength > 0) {
 		vec3 x;
 		float s;
-		s = dot_normalized(-ray.d, result.normal) * glm::length(ray.p - result.near);
+		s = dot_normalized(-ray.direction, result.normal) * glm::length(ray.origin - result.near);
 		vec3 a = s*glm::normalize(result.normal);
-		x = 2.f*a + result.near - ray.p;
+		x = 2.f*a + result.near - ray.origin;
 		Ray r = Ray(result.near, x);
 		params.reflectedColor = raytraceSingleRay(scene, r, level-1, result.id);
 	}
@@ -124,10 +124,12 @@ std::vector<RayAndPixel> getRaysForViewpoint(Scene const &scene, ImageBuffer &im
 void raytraceImage(Scene const &scene, ImageBuffer &image, glm::vec3 viewPoint) {
 	// Reset the image to the current size of the screen.
 	image.Initialize();
+
+	// Get the set of rays to cast for this given image / viewpoint
 	std::vector<RayAndPixel> rays = getRaysForViewpoint(scene, image, viewPoint);
 
 
-	// This function is responsible for processing each ray, and storing the
+	// This loops processes each ray and stores the resulting pixel in the image.
 	// final color into the image at the appropriate location.
 	//
 	// I've written it this way, because if you're keen on this, you can

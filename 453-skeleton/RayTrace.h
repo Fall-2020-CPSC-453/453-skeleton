@@ -16,19 +16,21 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
+#include "Lighting.h"
+
 using namespace std;
 using namespace glm;
 float dot_normalized(vec3 v1, vec3 v2);
 void debug(char* str, vec3 a);
 
-struct Ray{
-	vec3 p;
-	vec3 d;
+struct Ray {
+	vec3 origin;
+	vec3 direction;
 	Ray(vec3 point, vec3 dir){
-		p = point;
-		d = dir;
+		origin = point;
+		direction = dir;
 	}
-	Ray(): p(vec3(0,0,0)), d(vec3(0,0,0))
+	Ray(): origin(vec3(0,0,0)), direction(vec3(0,0,0))
 	{}
 };
 
@@ -37,19 +39,20 @@ struct Intersection{
 	vec3 near;
 	vec3 far;
 	vec3 normal;
-	vec3 color;
 	int id;
-	float reflection;
-	float spec;
+
+
+	ObjectMaterial material;
+
 	Intersection(int no, vec3 n, vec3 f, vec3 nor, vec3 cl, int ID){
 		num = no;
 		near = n;
 		far = f;
 		normal = nor;
-		color = cl;
 		id = ID;
+		material.color = cl;
 	}
-	Intersection(): num(0), near(0,0,0), far(0,0,0), normal(0,0,0), color(0,0,0), id(-1), reflection(0), spec(0)
+	Intersection(): num(0), near(0,0,0), far(0,0,0), normal(0,0,0), id(-1), material()
 	{}
 };
 
@@ -70,11 +73,11 @@ struct Triangle{
 class Shape{
 public:
 	virtual Intersection getIntersection(Ray ray) = 0;
-	vec3 color;
-	float reflection;	//reflection ratio
+
 	int id;
-	float spec;
-	Shape(): spec(0)
+	ObjectMaterial material;
+
+	Shape(): material()
 	{}
 };
 

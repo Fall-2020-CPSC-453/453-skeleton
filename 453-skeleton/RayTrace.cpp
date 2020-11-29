@@ -11,9 +11,9 @@ using namespace glm;
 Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
 	centre = c;
 	radius = r;
-	color = cl;
 	id = ID;
-	reflection =rf;
+	material.color = cl;
+	material.reflectionStrength = rf;
 }
 
 //------------------------------------------------------------------------------
@@ -24,17 +24,15 @@ Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
 //------------------------------------------------------------------------------
 Intersection Sphere::getIntersection(Ray ray){
 	Intersection inter_p;
-	float e = ray.p.x - centre.x;
-	float f = ray.p.y - centre.y;
-	float g = ray.p.z - centre.z;
-	float a = ray.d.x*ray.d.x + ray.d.y*ray.d.y + ray.d.z*ray.d.z;
-	float b = 2*(ray.d.x * e + ray.d.y * f + ray.d.z * g);
+	float e = ray.origin.x - centre.x;
+	float f = ray.origin.y - centre.y;
+	float g = ray.origin.z - centre.z;
+	float a = ray.direction.x*ray.direction.x + ray.direction.y*ray.direction.y + ray.direction.z*ray.direction.z;
+	float b = 2*(ray.direction.x * e + ray.direction.y * f + ray.direction.z * g);
 	float c = e*e + f*f + g*g - radius * radius;
 	float delt = b*b - 4*a*c;
-	inter_p.color = color;
+	inter_p.material = material;
 	inter_p.id = id;
-	inter_p.reflection = reflection;
-	inter_p.spec = spec;
 	if (delt < 0) {
 		return inter_p;
 	}
@@ -46,7 +44,7 @@ Intersection Sphere::getIntersection(Ray ray){
 			float s = -b/2.f/a;
 			if(s>0.001){
 				inter_p.num = 1;
-				inter_p.near = vec3(ray.p.x + s*ray.d.x, ray.p.y + s*ray.d.y, ray.p.z + s*ray.d.z);
+				inter_p.near = vec3(ray.origin.x + s*ray.direction.x, ray.origin.y + s*ray.direction.y, ray.origin.z + s*ray.direction.z);
 			}
 			inter_p.normal = inter_p.near-centre;
 			return inter_p;
@@ -61,7 +59,7 @@ Intersection Sphere::getIntersection(Ray ray){
 				float s = -c/b;
 				if(s>0.001){
 					inter_p.num = 1;
-					inter_p.near = vec3(ray.p.x + s*ray.d.x, ray.p.y + s*ray.d.y, ray.p.z + s*ray.d.z);
+					inter_p.near = vec3(ray.origin.x + s*ray.direction.x, ray.origin.y + s*ray.direction.y, ray.origin.z + s*ray.direction.z);
 				}
 				inter_p.normal = inter_p.near-centre;
 				return inter_p;
@@ -73,12 +71,12 @@ Intersection Sphere::getIntersection(Ray ray){
 			s2 = (-b - sqrt(delt)) / 2.f / a;
 			if(s1>0.001 && s2>0.001){
 				inter_p.num = 2;
-				inter_p.far = vec3(ray.p.x + s1*ray.d.x, ray.p.y + s1*ray.d.y, ray.p.z + s1*ray.d.z);
-				inter_p.near = vec3(ray.p.x + s2*ray.d.x, ray.p.y + s2*ray.d.y, ray.p.z + s2*ray.d.z);
+				inter_p.far = vec3(ray.origin.x + s1*ray.direction.x, ray.origin.y + s1*ray.direction.y, ray.origin.z + s1*ray.direction.z);
+				inter_p.near = vec3(ray.origin.x + s2*ray.direction.x, ray.origin.y + s2*ray.direction.y, ray.origin.z + s2*ray.direction.z);
 			}
 			else if(s1>0.001){
 				inter_p.num = 1;
-				inter_p.near = vec3(ray.p.x + s1*ray.d.x, ray.p.y + s1*ray.d.y, ray.p.z + s1*ray.d.z);
+				inter_p.near = vec3(ray.origin.x + s1*ray.direction.x, ray.origin.y + s1*ray.direction.y, ray.origin.z + s1*ray.direction.z);
 			}
 			inter_p.normal = inter_p.near-centre;
 			return inter_p;
@@ -89,9 +87,9 @@ Intersection Sphere::getIntersection(Ray ray){
 Plane::Plane(vec3 p, vec3 n, vec3 cl, float rf, int ID){
 	point = p;
 	normal = n;
-	color = cl;
 	id = ID;
-	reflection =rf;
+	material.color = cl;
+	material.reflectionStrength =rf;
 }
 
 
@@ -104,9 +102,10 @@ void debug(char* str, vec3 a){
 }
 // --------------------------------------------------------------------------
 void Triangles::initTriangles(int num, vec3 * t, vec3 cl, float rf, int ID){
-	color = cl;
+	material.color = cl;
+	material.reflectionStrength =rf;
+
 	id = ID;
-	reflection =rf;
 	for(int i = 0; i< num; i++){
 		triangles.push_back(Triangle(*t, *(t+1), *(t+2)));
 		t+=3;
@@ -118,17 +117,17 @@ Intersection Triangles::intersectTriangle(Ray ray, Triangle t){
 	vec3 u = t.p3 - t.p1;
 	vec3 n = cross(v,u);
 	Intersection p;
-	if(dot(n,ray.d) == 0){
+	if(dot(n,ray.direction) == 0){
 		return p;
 	}
-	mat3 inv = inverse(mat3(ray.d, -u, -v));
-	vec3 tmp = t.p1 - ray.p;
+	mat3 inv = inverse(mat3(ray.direction, -u, -v));
+	vec3 tmp = t.p1 - ray.origin;
 	float a = inv[0].x * tmp.x + inv[1].x * tmp.y + inv[2].x * tmp.z;
 	float b = inv[0].y * tmp.x + inv[1].y * tmp.y + inv[2].y * tmp.z;
 	float c = inv[0].z * tmp.x + inv[1].z * tmp.y + inv[2].z * tmp.z;
 	if(b>=0 && c>=0 &&b+c<=1 && a>0){
 		p.num = 1;
-		p.near = ray.p + a*ray.d;
+		p.near = ray.origin + a*ray.direction;
 		p.normal = n;
 	}
 	return p;
@@ -139,34 +138,31 @@ Intersection Triangles::getIntersection(Ray ray){
 	Intersection result;
 	float min = 9999;
 	result = intersectTriangle(ray, triangles.at(0));
-	if(result.num!=0)min = distance(result.near, ray.p);
+	if(result.num!=0)min = distance(result.near, ray.origin);
 	for(int i = 1; i<triangles.size() ;i++){
 		Intersection p = intersectTriangle(ray, triangles.at(i));
-		if(p.num !=0 && distance(p.near, ray.p) < min){
-			min = distance(p.near, ray.p);
+		if(p.num !=0 && distance(p.near, ray.origin) < min){
+			min = distance(p.near, ray.origin);
 			result = p;
 		}
 	}
 
-	result.color = color;
+	result.material = material;
+
 	result.id = id;
-	result.reflection = reflection;
-	result.spec = spec;
 	return result;
 }
 
 Intersection Plane::getIntersection(Ray ray){
 	Intersection result;
-	result.color = color;
+	result.material = material;
 	result.id = id;
 	result.normal = normal;
-	result.reflection = reflection;
-	result.spec = spec;
-	if(dot(normal, ray.d)>=0)return result;
-	float s = dot(point - ray.p, normal)/dot(ray.d, normal);
+	if(dot(normal, ray.direction)>=0)return result;
+	float s = dot(point - ray.origin, normal)/dot(ray.direction, normal);
 	//if(s<0.00001)return result;
 	result.num = 1;
-	result.near = ray.p + s*ray.d;
+	result.near = ray.origin + s*ray.direction;
 	return result;
 }
 
