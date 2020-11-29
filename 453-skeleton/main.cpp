@@ -32,7 +32,7 @@ int hasIntersection(Scene const &scene, Ray ray, int skipID){
 		Intersection tmp = shape->getIntersection(ray);
 		if(
 			shape->id != skipID
-			&& tmp.num!=0
+			&& tmp.numberOfIntersections!=0
 			&& glm::distance(tmp.point, ray.origin) > 0.00001
 			&& glm::distance(tmp.point, ray.origin) < glm::distance(ray.origin, scene.lightPosition) - 0.01
 		){
@@ -52,7 +52,7 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 		}
 		Intersection p = shape->getIntersection(ray);
 		float distance = glm::distance(p.point, ray.origin);
-		if(p.num !=0 && distance < min){
+		if(p.numberOfIntersections !=0 && distance < min){
 			min = distance;
 			closestIntersection = p;
 		}
@@ -71,7 +71,7 @@ glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int s
 	phong.inShadow = false;
 	phong.intersection = result;
 
-	if(result.num == 0) return glm::vec3(0, 0, 0); // black;
+	if(result.numberOfIntersections == 0) return glm::vec3(0, 0, 0); // black;
 
 	if (level < 1) {
 		phong.material.reflectionStrength = glm::vec3(0);

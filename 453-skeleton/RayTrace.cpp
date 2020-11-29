@@ -65,7 +65,7 @@ Intersection Sphere::getIntersection(Ray ray){
 	i.point = ray.origin + glm::normalize(ray.direction)*t;
 	i.normal = glm::normalize(i.point - centre);
 	i.id = id;
-	i.num = 1;
+	i.numberOfIntersections = 1;
 	i.material = material;
 	return i;
 }
@@ -128,7 +128,7 @@ Intersection Triangles::intersectTriangle(Ray ray, Triangle triangle){
 		p.point = ray.origin + ray.direction * t;
 		p.normal = glm::normalize(glm::cross(edge1, edge2));
 		p.material = material;
-		p.num = 1;
+		p.numberOfIntersections = 1;
 		p.id = id;
 		return p;
 	} else {
@@ -144,10 +144,10 @@ Intersection Triangles::getIntersection(Ray ray){
 	result.id = id;
 	float min = 9999;
 	result = intersectTriangle(ray, triangles.at(0));
-	if(result.num!=0)min = glm::distance(result.point, ray.origin);
+	if(result.numberOfIntersections!=0)min = glm::distance(result.point, ray.origin);
 	for(int i = 1; i<triangles.size() ;i++){
 		Intersection p = intersectTriangle(ray, triangles.at(i));
-		if(p.num !=0 && glm::distance(p.point, ray.origin) < min){
+		if(p.numberOfIntersections !=0 && glm::distance(p.point, ray.origin) < min){
 			min = glm::distance(p.point, ray.origin);
 			result = p;
 		}
@@ -166,7 +166,7 @@ Intersection Plane::getIntersection(Ray ray){
 	if(dot(normal, ray.direction)>=0)return result;
 	float s = dot(point - ray.origin, normal)/dot(ray.direction, normal);
 	//if(s<0.00001)return result;
-	result.num = 1;
+	result.numberOfIntersections = 1;
 	result.point = ray.origin + s*ray.direction;
 	return result;
 }

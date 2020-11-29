@@ -36,7 +36,7 @@ struct Ray {
 };
 
 struct Intersection{
-	int num;
+	int numberOfIntersections;
 	vec3 point;
 	vec3 normal;
 	int id;
@@ -44,12 +44,12 @@ struct Intersection{
 	ObjectMaterial material;
 
 	Intersection(int no, vec3 n, vec3 f, vec3 nor, int ID){
-		num = no;
+		numberOfIntersections = no;
 		point = n;
 		normal = nor;
 		id = ID;
 	}
-	Intersection(): num(0), point(0,0,0), normal(0,0,0), id(-1), material()
+	Intersection(): numberOfIntersections(0), point(0,0,0), normal(0,0,0), id(-1), material()
 	{}
 };
 
