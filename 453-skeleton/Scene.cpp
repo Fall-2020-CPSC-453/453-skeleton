@@ -307,6 +307,7 @@ Scene initScene1() {
 	scene1.lightPosition = vec3(0,2.5,-7.75);
 
 	scene1.lightColor = vec3(1,1,1);
+	scene1.ambientFactor = 0.1f;
 	return scene1;
 }
 
@@ -358,20 +359,21 @@ Scene initScene2() {
 	std::shared_ptr<Plane> floorTwo = std::make_shared<Plane>(
 			vec3(0,-1,0), vec3(0,1,0), 6);
 	floorTwo->material.diffuse = vec3(0.8, 0.8, 0.8);
-	floorTwo->material.ambient = 0.1f*floorTwo->material.diffuse;
+	floorTwo->material.ambient = 0.5f*floorTwo->material.diffuse;
 	scene2.shapesInScene.push_back(floorTwo);
 
 	//Back wall
 	std::shared_ptr<Plane> backWallTwo = std::make_shared<Plane>(
 			vec3(0,0,-12), vec3(0,0,1), 7);
 	backWallTwo->material.diffuse = vec3(0.0, 0.6, 0.6);
-	backWallTwo->material.ambient = 0.1f*backWallTwo->material.diffuse;
+	backWallTwo->material.ambient = 0.5f*backWallTwo->material.diffuse;
 	backWallTwo->material.specular = backWallTwo->material.diffuse;
 	backWallTwo->material.specularCoefficient = 8;
 	scene2.shapesInScene.push_back(backWallTwo);
 
 	scene2.lightPosition = vec3(4, 6, -1);
 	scene2.lightColor = vec3(1,1,1);
+	scene2.ambientFactor = 0.1f;
 
 	return scene2;
 }

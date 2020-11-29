@@ -14,6 +14,7 @@ class Shape;
 struct Scene {
 	glm::vec3 lightPosition;
 	glm::vec3 lightColor;
+	float ambientFactor;
 	std::vector<std::shared_ptr<Shape>> shapesInScene;
 };
 

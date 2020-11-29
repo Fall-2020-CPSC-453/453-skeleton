@@ -35,7 +35,7 @@ struct PhongReflection {
 	glm::vec3 v() const { return glm::normalize(ray.origin - p()); } // view direction
 	glm::vec3 r() const { return -glm::reflect(l(), n()); } // reflected light vector
 
-	glm::vec3 La() const { return scene.lightColor; } // Light ambient
+	glm::vec3 La() const { return scene.ambientFactor*scene.lightColor; } // Light ambient
 	glm::vec3 Ld() const { return scene.lightColor; } // Light diffuse
 	glm::vec3 Ls() const { return scene.lightColor; } // Light specular
 
