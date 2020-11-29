@@ -16,6 +16,23 @@ Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
 	material.reflectionStrength = rf;
 }
 
+bool solveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1)
+{
+	float discr = b * b - 4 * a * c;
+	if (discr < 0) return false;
+	else if (discr == 0) x0 = x1 = - 0.5 * b / a;
+	else {
+		float q = (b > 0) ?
+			-0.5 * (b + sqrt(discr)) :
+			-0.5 * (b - sqrt(discr));
+		x0 = q / a;
+		x1 = c / q;
+	}
+	if (x0 > x1) std::swap(x0, x1);
+
+	return true;
+}
+
 //------------------------------------------------------------------------------
 // This is part 2 of your assignment. At the moment, the spheres are not showing
 // up. Implement this method to make them show up.
@@ -23,65 +40,37 @@ Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
 // Make sure you set all of the appropriate fields in the Intersection object.
 //------------------------------------------------------------------------------
 Intersection Sphere::getIntersection(Ray ray){
-	Intersection inter_p;
-	float e = ray.origin.x - centre.x;
-	float f = ray.origin.y - centre.y;
-	float g = ray.origin.z - centre.z;
-	float a = ray.direction.x*ray.direction.x + ray.direction.y*ray.direction.y + ray.direction.z*ray.direction.z;
-	float b = 2*(ray.direction.x * e + ray.direction.y * f + ray.direction.z * g);
-	float c = e*e + f*f + g*g - radius * radius;
-	float delt = b*b - 4*a*c;
-	inter_p.material = material;
-	inter_p.id = id;
-	if (delt < 0) {
-		return inter_p;
+	Intersection i{};
+
+	// From https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+	float t0, t1;
+	// analytic solution
+	glm::vec3 L = ray.origin - centre;
+	float a = glm::dot(ray.direction, ray.direction);
+	float b = 2 * glm::dot(ray.direction, L);
+	float c = glm::dot(L, L) - radius*radius;
+	if (!solveQuadratic(a, b, c, t0, t1)) {
+		return i;
 	}
-	else if (delt == 0) {
-		if(a == 0){
-			return inter_p;
-		}
-		else{
-			float s = -b/2.f/a;
-			if(s>0.001){
-				inter_p.num = 1;
-				inter_p.near = vec3(ray.origin.x + s*ray.direction.x, ray.origin.y + s*ray.direction.y, ray.origin.z + s*ray.direction.z);
-			}
-			inter_p.normal = inter_p.near-centre;
-			return inter_p;
+
+	if (t0 > t1) std::swap(t0, t1);
+
+	const float EPSILON = 0.1;
+	if (t0 < EPSILON) {
+		t0 = t1; // if t0 is negative, let's use t1 instead
+		if (t0 < EPSILON) {
+			return i;
 		}
 	}
-	else {
-		if(a == 0){
-			if(b == 0){
-				return inter_p;
-			}
-			else{
-				float s = -c/b;
-				if(s>0.001){
-					inter_p.num = 1;
-					inter_p.near = vec3(ray.origin.x + s*ray.direction.x, ray.origin.y + s*ray.direction.y, ray.origin.z + s*ray.direction.z);
-				}
-				inter_p.normal = inter_p.near-centre;
-				return inter_p;
-			}
-		}
-		else{
-			float s1, s2;
-			s1 = (-b + sqrt(delt)) / 2.f / a;
-			s2 = (-b - sqrt(delt)) / 2.f / a;
-			if(s1>0.001 && s2>0.001){
-				inter_p.num = 2;
-				inter_p.far = vec3(ray.origin.x + s1*ray.direction.x, ray.origin.y + s1*ray.direction.y, ray.origin.z + s1*ray.direction.z);
-				inter_p.near = vec3(ray.origin.x + s2*ray.direction.x, ray.origin.y + s2*ray.direction.y, ray.origin.z + s2*ray.direction.z);
-			}
-			else if(s1>0.001){
-				inter_p.num = 1;
-				inter_p.near = vec3(ray.origin.x + s1*ray.direction.x, ray.origin.y + s1*ray.direction.y, ray.origin.z + s1*ray.direction.z);
-			}
-			inter_p.normal = inter_p.near-centre;
-			return inter_p;
-		}
-	}
+
+	float t = t0;
+
+	i.near = ray.origin + glm::normalize(ray.direction)*t;
+	i.normal = glm::normalize(i.near - centre);
+	i.id = id;
+	i.num = 1;
+	i.material = material;
+	return i;
 }
 
 Plane::Plane(vec3 p, vec3 n, vec3 cl, float rf, int ID){
@@ -158,7 +147,9 @@ Intersection Triangles::intersectTriangle(Ray ray, Triangle triangle){
 
 
 Intersection Triangles::getIntersection(Ray ray){
-	Intersection result;
+	Intersection result{};
+	result.material = material;
+	result.id = id;
 	float min = 9999;
 	result = intersectTriangle(ray, triangles.at(0));
 	if(result.num!=0)min = distance(result.near, ray.origin);
@@ -171,7 +162,6 @@ Intersection Triangles::getIntersection(Ray ray){
 	}
 
 	result.material = material;
-
 	result.id = id;
 	return result;
 }

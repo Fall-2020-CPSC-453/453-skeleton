@@ -41,7 +41,6 @@ struct Intersection{
 	vec3 normal;
 	int id;
 
-
 	ObjectMaterial material;
 
 	Intersection(int no, vec3 n, vec3 f, vec3 nor, vec3 cl, int ID){

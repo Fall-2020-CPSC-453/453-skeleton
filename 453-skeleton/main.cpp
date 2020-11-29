@@ -28,7 +28,12 @@
 int hasIntersection(Scene const &scene, Ray ray, int skipID){
 	for (auto &shape : scene.shapesInScene) {
 		Intersection tmp = shape->getIntersection(ray);
-		if(shape->id != skipID && tmp.num!=0 && glm::length(tmp.near - ray.origin)> 0.00001 && glm::length(tmp.near - ray.origin) < glm::length(ray.origin - scene.light) - 0.01){
+		if(
+			shape->id != skipID
+			&& tmp.num!=0
+			&& glm::length(tmp.near - ray.origin) > 0.00001
+			&& glm::length(tmp.near - ray.origin) < glm::length(ray.origin - scene.light) - 0.01
+		){
 			return tmp.id;
 		}
 	}
