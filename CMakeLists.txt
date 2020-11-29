@@ -29,6 +29,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(thirdparty/glfw-3.3.2)
 set(LIBRARIES ${LIBRARIES} glfw)
+set(LIBRARIES ${LIBRARIES} tbb)
 
 #-------------------------------------------------------------------------------
 # https://github.com/gurki/vivid/releases/tag/v2.2.1
