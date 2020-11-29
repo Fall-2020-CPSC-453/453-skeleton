@@ -13,19 +13,29 @@
 
 // Calculate the ambient factor.
 glm::vec3 ambient(FragmentShadingParameters params) {
-	return params.sceneAmbient * params.material.color;
+	auto Ka = params.Kd();
+	auto La = params.n();
+	// Just like in lecture
+	return Ka*La;
 }
 
 // Calculate the diffuse factor.
 glm::vec3 diffuse(FragmentShadingParameters params) {
-	float tmpDiffuse = std::max(0.0f, dot_normalized(params.pointNormal, params.lightPosition-params.point));
-	return params.sceneDiffuse * tmpDiffuse * params.material.color;
+	auto n = params.n();
+	auto l = params.n();
+	auto Kd = params.Kd();
+	auto Ld = params.n();
+	float l_dot_n = dot_normalized(n, l);
+	l_dot_n = std::max(0.0f, l_dot_n);
+	// Just like in lecture
+	return Kd * l_dot_n * Ld;
 }
 
 // Calculate the specular factor.
 float specular(FragmentShadingParameters params) {
+
 	glm::vec3 viewDirection = params.point - params.rayOrigin;
-	return std::pow(dot_normalized(params.lightPosition-params.point-viewDirection, params.pointNormal), params.material.specularStrength);
+	return std::pow(dot_normalized(params.scene.lightPosition-params.point-viewDirection, params.pointNormal), params.material.specularCoefficient);
 }
 
 // Put it all together into a phone shaded equation
@@ -34,19 +44,19 @@ glm::vec3 phongShading(FragmentShadingParameters params) {
 		return ambient(params);
 	}
 
-	if(params.material.specularStrength <= 0.0 && params.material.reflectionStrength <= 0.0) {
+	if(params.material.specularCoefficient <= 0.0 && params.material.reflectionStrength <= 0.0) {
 		return ambient(params) + diffuse(params);
 	}
 
 	if (params.material.reflectionStrength <= 0) {
-		if(params.material.specularStrength > 0.0) {
+		if(params.material.specularCoefficient > 0.0) {
 			return (0.7f * (ambient(params) + diffuse(params))) + 0.3f * specular(params);
 		} else {
 			return ambient(params) + diffuse(params) + specular(params);
 		}
 	} else {
 		glm::vec3 color;
-		if(params.material.specularStrength > 0.0) {
+		if(params.material.specularCoefficient > 0.0) {
 			color = ambient(params) + diffuse(params) + specular(params);
 		} else {
 			color = ambient(params) + diffuse(params);

@@ -5,40 +5,53 @@
 
 #include <glm/glm.hpp>
 
+#include "Scene.h"
+
 // This object represents the "material" that is covering an object.
 // Like its colour, reflection parameter and its specular parameters
 struct ObjectMaterial {
 	glm::vec3 color;
 	float reflectionStrength = 0;
-	float specularStrength = 0;
+	float specularCoefficient = 0;
+	glm::vec3 specular;
+	glm::vec3 diffuse;
+	float ambient;
 
 	ObjectMaterial() : color(0, 0, 0) {}
 };
 
 struct FragmentShadingParameters {
 	// Information about the point we're shading
-	glm::vec3 point; // The point we are shading in the scene.
-	glm::vec3 pointNormal; // The normal of the point we are shading in the scene.
+	Intersection intersection;
 
 	// The point's material parameters
 	ObjectMaterial material;
 
-	// Information about the camera and light.
-	glm::vec3 rayOrigin;
-	glm::vec3 lightPosition; // The position of the light
+	// Information about the ray being used.
+	Ray ray;
 
-
-	float sceneAmbient; // The amount of ambient in the scene
-	float sceneDiffuse; // The amount of diffuse in the scene
-
+	// Information about the scene
+	Scene scene;
 
 	// This must be set when an point has no path to the light
 	bool inShadow; // Set this when the pixel is in shadow
 
-
 	// These parameters must be set for objects that show reflections
-
 	glm::vec3 reflectedColor; // The reflectedColor
+
+
+	// Helper methods to name things the same as lecture
+	glm::vec3 l() const { return intersection.lightPosition - p; }
+	glm::vec3 n() const { return intersection.normal; }
+	glm::vec3 p() const { return intersection.near; }
+	glm::vec3 Ld() const { return scene.lightColor; }
+	glm::vec3 Ls() const { return scene.lightColor; }
+	glm::vec3 La() const { return scene.lightColor; }
+	glm::vec3 Kd() const { return material.diffuse; }
+	glm::vec3 Ks() const { return material.specular; }
+	float Ka() const { return material.ambient; }
+	float alpha() const { return material.specularCoefficient; }
+
 };
 
 // Calculate the ambient factor.

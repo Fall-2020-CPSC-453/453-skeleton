@@ -266,12 +266,10 @@ Scene initScene1() {
 	std::shared_ptr<Triangles> ceilingWall = std::make_shared<Triangles>();
 	std::shared_ptr<Triangles> backWall = std::make_shared<Triangles>();
 
-	scene1.light = vec3(0,2.5,-7.75);
-	scene1.ambient = 0.1;
-	scene1.diffuse = 0.4;
-	scene1.light_color = vec3(1,1,1);
+	scene1.lightPosition = vec3(0,2.5,-7.75);
+	scene1.lightColor = vec3(1,1,1);
 
-	sphere1->material.specularStrength = 64;
+	sphere1->material.specularCoefficient = 64;
 	scene1.shapesInScene.push_back(sphere1);
 
 	pyramid->initTriangles(4, blue_pyramid, vec3(0,0.85,0.95), 0.3, 2);
@@ -317,30 +315,28 @@ Scene initScene2() {
 	std::shared_ptr<Plane> backWallTwo = std::make_shared<Plane>(
 			vec3(0,0,-12), vec3(0,0,1), vec3(0,0.6,0.6), 0, 7);
 
-	scene2.light = vec3(4, 6, -1);
-	scene2.ambient = 0.1;
-	scene2.diffuse = 0.7;
-	scene2.light_color = vec3(1,1,1);
+	scene2.lightPosition = vec3(4, 6, -1);
+	scene2.lightColor = vec3(1,1,1);
 
 	Icosahedron->initTriangles(20,icosahedron, vec3(1,0,0), 0.5, 1);
 	scene2.shapesInScene.push_back(Icosahedron);
 
-	sphere2->material.specularStrength = 64;
+	sphere2->material.specularCoefficient = 64;
 	scene2.shapesInScene.push_back(sphere2);
 
-	sphere3->material.specularStrength = 64;
+	sphere3->material.specularCoefficient = 64;
 	scene2.shapesInScene.push_back(sphere3);
 
-	sphere4->material.specularStrength = 64;
+	sphere4->material.specularCoefficient = 64;
 	scene2.shapesInScene.push_back(sphere4);
 
 	greenCone->initTriangles(12,green_Cone, vec3(0,0.8,0), 0, 5);
-	greenCone->material.specularStrength = 8;
+	greenCone->material.specularCoefficient = 8;
 	scene2.shapesInScene.push_back(greenCone);
 
 	scene2.shapesInScene.push_back(floorTwo);
 
-	backWallTwo->material.specularStrength = 8;
+	backWallTwo->material.specularCoefficient = 8;
 	scene2.shapesInScene.push_back(backWallTwo);
 
 	return scene2;
@@ -386,30 +382,28 @@ Scene initScene3() {
 	std::shared_ptr<Sphere> sphere7 = std::make_shared<Sphere>(
 			vec3( -0.5, -0.75, -4.5), 0.25, vec3(0.4,0.6,0.8), 0, 6);
 
-	scene3.light = vec3(4,6,-1);
-	scene3.ambient = 0.1;
-	scene3.diffuse = 0.4;
-	scene3.light_color = vec3(1,1,1);
+	scene3.lightPosition = vec3(4,6,-1);
+	scene3.lightColor = vec3(1,1,1);
 
 	scene3.shapesInScene.push_back(Floor3);
 
-	backWall3->material.specularStrength = 8;
+	backWall3->material.specularCoefficient = 8;
 	scene3.shapesInScene.push_back(backWall3);
 
 	leftWall3->material.reflectionStrength = 0.2;
 	scene3.shapesInScene.push_back(leftWall3);
 
-	sphere5->material.specularStrength = 16;
+	sphere5->material.specularCoefficient = 16;
 	scene3.shapesInScene.push_back(sphere5);
 
-	sphere6->material.specularStrength = 8;
+	sphere6->material.specularCoefficient = 8;
 	scene3.shapesInScene.push_back(sphere6);
 
-	sphere7->material.specularStrength = 64;
+	sphere7->material.specularCoefficient = 64;
 	scene3.shapesInScene.push_back(sphere7);
 
 	Diamond->initTriangles(4, diamond, vec3(0,0.85,0.95), 0.3, 7);
-	Diamond->material.specularStrength = 8;
+	Diamond->material.specularCoefficient = 8;
 	scene3.shapesInScene.push_back(Diamond);
 	return scene3;
 }
