@@ -8,12 +8,10 @@
 using namespace std;
 using namespace glm;
 
-Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
+Sphere::Sphere(vec3 c, float r, int ID){
 	centre = c;
 	radius = r;
 	id = ID;
-	material.color = cl;
-	material.reflectionStrength = rf;
 }
 
 //------------------------------------------------------------------------------
@@ -24,6 +22,24 @@ Sphere::Sphere(vec3 c, float r, vec3 cl, float rf, int ID){
 //------------------------------------------------------------------------------
 Intersection Sphere::getIntersection(Ray ray){
 	Intersection i{};
+	i.id = id;
+	i.material = material;
+
+	// You are required to implement this intersection.
+	//
+	// NOTE: You _must_ set these values appropriately for each case:
+	//
+	// No Intersection:
+	// i.numberOfIntersections = 0;
+	//
+	// Intersection:
+	// i.normal = **the normal at the point of intersection **
+	// i.point = **the point of intersection**
+	// i.numberOfIntersections = 1; // for a single intersection
+	//
+	// If you get fancy and implement things like refraction, you may actually
+	// want to track more than one intersection. You'll need to change
+	// The intersection struct in that case.
 
 	// From https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
 	auto solveQuadratic = [](const float &a, const float &b, const float &c, float &x0, float &x1) {
@@ -64,20 +80,16 @@ Intersection Sphere::getIntersection(Ray ray){
 
 	float t = t0;
 
-	i.near = ray.origin + glm::normalize(ray.direction)*t;
-	i.normal = glm::normalize(i.near - centre);
-	i.id = id;
-	i.num = 1;
-	i.material = material;
+	i.point = ray.origin + glm::normalize(ray.direction)*t;
+	i.normal = glm::normalize(i.point - centre);
+	i.numberOfIntersections = 1;
 	return i;
 }
 
-Plane::Plane(vec3 p, vec3 n, vec3 cl, float rf, int ID){
+Plane::Plane(vec3 p, vec3 n, int ID){
 	point = p;
 	normal = n;
 	id = ID;
-	material.color = cl;
-	material.reflectionStrength = rf;
 }
 
 
@@ -89,10 +101,7 @@ void debug(char* str, vec3 a){
 	cout << "debug:" << str << ": " << a.x <<", " << a.y <<", " << a.z << endl;
 }
 // --------------------------------------------------------------------------
-void Triangles::initTriangles(int num, vec3 * t, vec3 cl, float rf, int ID){
-	material.color = cl;
-	material.reflectionStrength =rf;
-
+void Triangles::initTriangles(int num, vec3 * t, int ID){
 	id = ID;
 	for(int i = 0; i< num; i++){
 		triangles.push_back(Triangle(*t, *(t+1), *(t+2)));
@@ -132,10 +141,10 @@ Intersection Triangles::intersectTriangle(Ray ray, Triangle triangle){
 	// ray intersection
 	if (t > EPSILON) {
 		Intersection p;
-		p.near = ray.origin + ray.direction * t;
+		p.point = ray.origin + ray.direction * t;
 		p.normal = glm::normalize(glm::cross(edge1, edge2));
 		p.material = material;
-		p.num = 1;
+		p.numberOfIntersections = 1;
 		p.id = id;
 		return p;
 	} else {
@@ -151,11 +160,11 @@ Intersection Triangles::getIntersection(Ray ray){
 	result.id = id;
 	float min = 9999;
 	result = intersectTriangle(ray, triangles.at(0));
-	if(result.num!=0)min = glm::distance(result.near, ray.origin);
+	if(result.numberOfIntersections!=0)min = glm::distance(result.point, ray.origin);
 	for(int i = 1; i<triangles.size() ;i++){
 		Intersection p = intersectTriangle(ray, triangles.at(i));
-		if(p.num !=0 && glm::distance(p.near, ray.origin) < min){
-			min = glm::distance(p.near, ray.origin);
+		if(p.numberOfIntersections !=0 && glm::distance(p.point, ray.origin) < min){
+			min = glm::distance(p.point, ray.origin);
 			result = p;
 		}
 	}
@@ -173,8 +182,8 @@ Intersection Plane::getIntersection(Ray ray){
 	if(dot(normal, ray.direction)>=0)return result;
 	float s = dot(point - ray.origin, normal)/dot(ray.direction, normal);
 	//if(s<0.00001)return result;
-	result.num = 1;
-	result.near = ray.origin + s*ray.direction;
+	result.numberOfIntersections = 1;
+	result.point = ray.origin + s*ray.direction;
 	return result;
 }
 

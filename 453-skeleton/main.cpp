@@ -8,6 +8,8 @@
 #include <execution>
 #include <string>
 
+#include <glm/gtx/vector_query.hpp>
+
 #include "Geometry.h"
 #include "GLDebug.h"
 #include "Log.h"
@@ -30,9 +32,9 @@ int hasIntersection(Scene const &scene, Ray ray, int skipID){
 		Intersection tmp = shape->getIntersection(ray);
 		if(
 			shape->id != skipID
-			&& tmp.num!=0
-			&& glm::distance(tmp.near, ray.origin) > 0.00001
-			&& glm::distance(tmp.near, ray.origin) < glm::distance(ray.origin, scene.light) - 0.01
+			&& tmp.numberOfIntersections!=0
+			&& glm::distance(tmp.point, ray.origin) > 0.00001
+			&& glm::distance(tmp.point, ray.origin) < glm::distance(ray.origin, scene.lightPosition) - 0.01
 		){
 			return tmp.id;
 		}
@@ -49,8 +51,8 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 			continue;
 		}
 		Intersection p = shape->getIntersection(ray);
-		float distance = glm::distance(p.near, ray.origin);
-		if(p.num !=0 && distance < min){
+		float distance = glm::distance(p.point, ray.origin);
+		if(p.numberOfIntersections !=0 && distance < min){
 			min = distance;
 			closestIntersection = p;
 		}
@@ -58,45 +60,33 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 	return closestIntersection;
 }
 
-Ray reflectRay(Ray const &r, glm::vec3 p, glm::vec3 normal) {
-	// From: http://paulbourke.net/geometry/reflected/
-	// Rr = Ri - 2 N (Ri . N)
-	auto N = glm::normalize(normal);
-	auto Ri = glm::normalize(r.direction);
-	float s = glm::dot(Ri, N);
-	auto Rr = Ri - 2.f * N * s;
-	return Ray(p, Rr);
-}
 
 glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int source_id) {
 	Intersection result = getClosestIntersection(scene, ray, source_id); //find intersection
 
-	FragmentShadingParameters params;
-	params.point = result.near;
-	params.pointNormal = result.normal;
-	params.rayOrigin = ray.origin;
-	params.lightPosition = scene.light;
-	params.sceneAmbient = scene.ambient;
-	params.sceneDiffuse = scene.diffuse;
-	params.material = result.material;
-	params.inShadow = false;
+	PhongReflection phong;
+	phong.ray = ray;
+	phong.scene = scene;
+	phong.material = result.material;
+	phong.inShadow = false;
+	phong.intersection = result;
 
-	if(result.num == 0) return glm::vec3(0, 0, 0); // black;
+	if(result.numberOfIntersections == 0) return glm::vec3(0, 0, 0); // black;
 
 	if (level < 1) {
-		params.material.reflectionStrength = 0;
+		phong.material.reflectionStrength = glm::vec3(0);
 	}
 
-	if(-1!=hasIntersection(scene, Ray(result.near, scene.light-result.near), result.id)){//in shadow
-		params.inShadow = true;
+	if(-1!=hasIntersection(scene, Ray(result.point, phong.l()), result.id)){//in shadow
+		phong.inShadow = true;
 	}
 
-	if (params.material.reflectionStrength > 0) {
-		Ray reflection = reflectRay(ray, result.near, result.normal);
-		params.reflectedColor = raytraceSingleRay(scene, reflection, level-1, result.id);
+	if (!glm::isNull(phong.material.reflectionStrength, 0.00001f)) {
+		Ray reflection = Ray(result.point, -glm::reflect(phong.v(), phong.n()));
+		phong.reflectedColor = raytraceSingleRay(scene, reflection, level-1, result.id);
 	}
 
-	return phongShading(params);
+	return phong.I_withReflection();
 }
 
 struct RayAndPixel {
@@ -146,7 +136,8 @@ void raytraceImage(Scene const &scene, ImageBuffer &image, glm::vec3 viewPoint) 
 	//
 	// Note, if you do this, you will need to be careful about how you render
 	// things below too
-	std::for_each(std::execution::par, std::begin(rays), std::end(rays), [&] (auto const &r) {
+	//std::for_each(std::execution::par, std::begin(rays), std::end(rays), [&] (auto const &r) {
+	std::for_each(std::begin(rays), std::end(rays), [&] (auto const &r) {
 		glm::vec3 color = raytraceSingleRay(scene, r.ray, 5, -1);
 		image.SetPixel(r.x, r.y, color);
 	});
@@ -158,7 +149,7 @@ class Assignment5 : public CallbackInterface {
 public:
 	Assignment5() {
 		viewPoint = glm::vec3(0, 0, 0);
-		scene = initScene2();
+		scene = initScene1();
 		raytraceImage(scene, outputImage, viewPoint);
 	}
 
@@ -174,11 +165,6 @@ public:
 
 		if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
 			scene = initScene2();
-			raytraceImage(scene, outputImage, viewPoint);
-		}
-
-		if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
-			scene = initScene3();
 			raytraceImage(scene, outputImage, viewPoint);
 		}
 	}
