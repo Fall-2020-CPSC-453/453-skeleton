@@ -47,7 +47,8 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 	float min = std::numeric_limits<float>::max();
 	for(auto &shape : scene.shapesInScene) {
 		if(skipID == shape->id) {
-			// Sometimes you need to skip certain shapes.
+			// Sometimes you need to skip certain shapes. Useful to
+			// avoid self-intersection. ;)
 			continue;
 		}
 		Intersection p = shape->getIntersection(ray);
@@ -62,6 +63,13 @@ Intersection getClosestIntersection(Scene const &scene, Ray ray, int skipID){ //
 
 
 glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int source_id) {
+	// TODO: Part 3: Somewhere in this function you will need to add the code to determine
+	//               if a given point is in shadow or not. Think carefully about what parts
+	//               of the lighting equation should be used when a point is in shadow.
+	// TODO: Part 4: Somewhere in this function you will need to add the code that does reflections.
+	//               NOTE: The ObjectMaterial class already has a parameter to store the object's
+	//               reflective properties. Use this parameter + the color coming back from the
+	//               reflected array and the color from the phong shading equation.
 	Intersection result = getClosestIntersection(scene, ray, source_id); //find intersection
 
 	PhongReflection phong;
@@ -76,7 +84,8 @@ glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int s
 		phong.material.reflectionStrength = glm::vec3(0);
 	}
 
-	return phong.I_withReflection();
+
+	return phong.I();
 }
 
 struct RayAndPixel {
@@ -95,6 +104,8 @@ std::vector<RayAndPixel> getRaysForViewpoint(Scene const &scene, ImageBuffer &im
 	int y = 0;
 	std::vector<RayAndPixel> rays;
 
+	// TODO: Part 2: Currently this is casting rays in an orthographic style.
+	//               You need to change this code to project them in a pinhole camera style.
 	for (float i = -1; x < image.Width(); x++) {
 		y = 0;
 		for (float j = -1; y < image.Height(); y++) {

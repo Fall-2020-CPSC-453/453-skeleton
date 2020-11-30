@@ -21,12 +21,6 @@ struct PhongReflection {
 	// Information about the scene
 	Scene scene;
 
-	// This must be set when an point has no path to the light
-	bool inShadow = false; // Set this when the pixel is in shadow
-
-	// These parameters must be set for objects that show reflections
-	glm::vec3 reflectedColor; // The reflectedColor
-
 
 	// Helper methods to name things the same as lecture
 	glm::vec3 l() const { return glm::normalize(scene.lightPosition - p()); } // light vector
@@ -77,17 +71,7 @@ struct PhongReflection {
 
 	// Put it all together into a phong reflection equation
 	glm::vec3 I() const {
-		if (inShadow) {
-			return Ia();
-		}
 		return Id() + Is() + Ia();
 	}
-
-	// Add in reflection
-	glm::vec3 I_withReflection() const {
-		// TODO: You will need to implement this for part 4
-		return I();
-	}
-
 };
 
