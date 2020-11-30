@@ -40,6 +40,49 @@ Intersection Sphere::getIntersection(Ray ray){
 	// If you get fancy and implement things like refraction, you may actually
 	// want to track more than one intersection. You'll need to change
 	// The intersection struct in that case.
+
+	// From https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+	auto solveQuadratic = [](const float &a, const float &b, const float &c, float &x0, float &x1) {
+		float discr = b * b - 4 * a * c;
+		if (discr < 0) return false;
+		else if (discr == 0) x0 = x1 = - 0.5 * b / a;
+		else {
+			float q = (b > 0) ?
+				-0.5 * (b + sqrt(discr)) :
+				-0.5 * (b - sqrt(discr));
+			x0 = q / a;
+			x1 = c / q;
+		}
+		if (x0 > x1) std::swap(x0, x1);
+
+		return true;
+	};
+	float t0, t1;
+	// analytic solution
+	glm::vec3 L = ray.origin - centre;
+	auto D = glm::normalize(ray.direction);
+	float a = glm::dot(D, D);
+	float b = 2 * glm::dot(D, L);
+	float c = glm::dot(L, L) - radius*radius;
+	if (!solveQuadratic(a, b, c, t0, t1)) {
+		return i;
+	}
+
+	if (t0 > t1) std::swap(t0, t1);
+
+	const float EPSILON = 0.1;
+	if (t0 < EPSILON) {
+		t0 = t1; // if t0 is negative, let's use t1 instead
+		if (t0 < EPSILON) {
+			return i;
+		}
+	}
+
+	float t = t0;
+
+	i.point = ray.origin + glm::normalize(ray.direction)*t;
+	i.normal = glm::normalize(i.point - centre);
+	i.numberOfIntersections = 1;
 	return i;
 }
 
