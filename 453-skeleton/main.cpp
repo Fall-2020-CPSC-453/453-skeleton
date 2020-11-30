@@ -68,12 +68,17 @@ glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int s
 	phong.ray = ray;
 	phong.scene = scene;
 	phong.material = result.material;
+	phong.inShadow = false;
 	phong.intersection = result;
 
 	if(result.numberOfIntersections == 0) return glm::vec3(0, 0, 0); // black;
 
 	if (level < 1) {
 		phong.material.reflectionStrength = glm::vec3(0);
+	}
+
+	if(-1!=hasIntersection(scene, Ray(result.point, phong.l()), result.id)){//in shadow
+		phong.inShadow = true;
 	}
 
 	if (!glm::isNull(phong.material.reflectionStrength, 0.00001f)) {
