@@ -81,11 +81,6 @@ glm::vec3 raytraceSingleRay(Scene const &scene, Ray const &ray, int level, int s
 		phong.inShadow = true;
 	}
 
-	if (!glm::isNull(phong.material.reflectionStrength, 0.00001f)) {
-		Ray reflection = Ray(result.point, -glm::reflect(phong.v(), phong.n()));
-		phong.reflectedColor = raytraceSingleRay(scene, reflection, level-1, result.id);
-	}
-
 	return phong.I_withReflection();
 }
 
